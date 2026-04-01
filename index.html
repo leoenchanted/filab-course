@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Film Lab 胶片滤镜编辑器 - 交互式课程</title>
+
+  <!-- Google Fonts: Bricolage Grotesque · DM Sans · JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <!--
+    使用琥珀色主题
+  -->
+  <style>
+    :root {
+      --color-accent:       #D4A843;
+      --color-accent-hover: #BF9530;
+      --color-accent-light: #FDF5E0;
+      --color-accent-muted: #E0C070;
+    }
+  </style>
+
+  <script src="main.js" defer></script>
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="nav-inner">
+      <span class="nav-title">Film Lab 胶片滤镜编辑器</span>
+      <div class="nav-dots" id="nav-dots" role="tablist">
+        <button class="nav-dot" data-target="module-1" data-tooltip="初识 Film Lab" role="tab" aria-label="模块 1: 初识 Film Lab"></button>
+        <button class="nav-dot" data-target="module-2" data-tooltip="核心组件架构" role="tab" aria-label="模块 2: 核心组件架构"></button>
+        <button class="nav-dot" data-target="module-3" data-tooltip="WebGL 图像处理" role="tab" aria-label="模块 3: WebGL 图像处理"></button>
+        <button class="nav-dot" data-target="module-4" data-tooltip="胶片预设系统" role="tab" aria-label="模块 4: 胶片预设系统"></button>
+        <button class="nav-dot" data-target="module-5" data-tooltip="后端与数据管理" role="tab" aria-label="模块 5: 后端与数据管理"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <!-- modules/*.html content is assembled here by build.sh -->
+<!-- 模块 1: 初识 Film Lab -->
+<section class="module" id="module-1">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">01</span>
+      <h1 class="module-title">初识 Film Lab</h1>
+      <p class="module-subtitle">一个基于 WebGL 的专业胶片模拟滤镜编辑器</p>
+    </header>
+
+    <!-- 屏幕 1: 这是什么 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">Film Lab 是什么？</h2>
+      <p class="animate-in">
+        <span class="term" data-definition="胶片模拟（Film Simulation）是一种数字图像处理技术，通过算法模仿传统胶片相机拍摄的色彩和质感。">胶片模拟</span>曾经是专业摄影师的专属工具，需要昂贵的 Lightroom 插件或 Photoshop 动作。Film Lab 把它带到了浏览器里——免费、即时、专业级。
+      </p>
+
+      <div class="pattern-cards animate-in">
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+          <div class="pattern-icon" style="background: var(--color-actor-1)">🎞️</div>
+          <h4 class="pattern-title">经典胶片预设</h4>
+          <p class="pattern-desc">Fuji Pro 400H、Kodak Portra 400、CineStill 800T 等 10+ 种专业胶片模拟</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+          <div class="pattern-icon" style="background: var(--color-actor-2)">⚡</div>
+          <h4 class="pattern-title">实时 GPU 加速</h4>
+          <p class="pattern-desc">使用 WebGL 2.0 在显卡上直接处理图像，秒级渲染大分辨率照片</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+          <div class="pattern-icon" style="background: var(--color-actor-3)">🎚️</div>
+          <h4 class="pattern-title">精细参数调整</h4>
+          <p class="pattern-desc">曝光、对比度、色温、色调、颗粒、暗角——完全可控</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-4)">
+          <div class="pattern-icon" style="background: var(--color-actor-4)">💾</div>
+          <h4 class="pattern-title">高质量导出</h4>
+          <p class="pattern-desc">支持原分辨率导出，保留最高画质，自动处理超大图片</p>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content">
+          <strong class="callout-title">为什么浏览器能做这个？</strong>
+          <p>传统上，图像处理需要 Photoshop 或 Lightroom 这样的桌面软件。但随着 <span class="term" data-definition="WebGL 是一种在网页浏览器中使用 GPU 加速图形渲染的技术，无需插件即可实现高性能 3D 和 2D 图形。">WebGL</span> 技术的成熟，浏览器现在可以直接调用你的显卡进行并行计算——这意味着复杂的图像滤镜可以在几毫秒内完成。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: 使用场景 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">想象一下这个场景</h2>
+      <p class="animate-in">
+        你刚拍完一组照片，想给它们统一加上那种复古胶片的质感。以前你需要：打开 Lightroom → 导入照片 → 购买 VSCO 预设包 → 逐个调整参数 → 导出。
+      </p>
+      <p class="animate-in">
+        用 Film Lab，你只需要：打开网页 → 拖拽照片 → 点击喜欢的胶片风格 → 下载。
+      </p>
+
+      <div class="step-cards animate-in">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>上传照片</strong>
+            <p>支持任意分辨率的 JPG/PNG，自动处理超大图片</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>选择胶片风格</strong>
+            <p>从 Fuji、Kodak、B&W、Vintage 四个分类中选择</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>微调参数（可选）</strong>
+            <p>调整强度、色温、颗粒感等参数，打造独特风格</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>导出成品</strong>
+            <p>一键下载处理后的高清图片，文件名自动包含胶片型号</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: 技术亮点预览 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">技术亮点预览</h2>
+      <p class="animate-in">
+        这个看似简单的应用背后，隐藏着许多精心设计的工程技术。在接下来的模块中，我们将深入探讨：
+      </p>
+
+      <div class="icon-rows animate-in">
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-1)">⚛️</div>
+          <div>
+            <strong>React + Next.js 架构</strong>
+            <p>现代化的前端组件系统，如何处理复杂的 UI 状态管理</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-2)">🎨</div>
+          <div>
+            <strong>WebGL 图像处理管线</strong>
+            <p>从 GLSL 着色器到帧缓冲区，完整的 GPU 图像处理流程</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-3)">🎞️</div>
+          <div>
+            <strong>胶片模拟算法</strong>
+            <p>色彩矩阵、曲线映射、光晕效果、颗粒生成——如何"欺骗"眼睛</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-4)">🗄️</div>
+          <div>
+            <strong>Supabase 后端集成</strong>
+            <p>访客统计、地理位置追踪、简单的身份验证系统</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: 小测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">快速检验一下</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module1">
+        <div class="quiz-question-block"
+             data-correct="gpu"
+             data-explanation-right="正确！Film Lab 使用 WebGL 技术直接调用 GPU 进行图像处理，这是它能实现实时滤镜的关键。"
+             data-explanation-wrong="不对。虽然服务器可以处理图像，但 Film Lab 的所有处理都在浏览器本地完成，利用的是用户的显卡（GPU）进行加速。">
+          <h3 class="quiz-question">Film Lab 的图像滤镜是在哪里计算的？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="server" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>发送到远程服务器处理</span>
+            </button>
+            <button class="quiz-option" data-value="cpu" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用电脑的 CPU 慢慢计算</span>
+            </button>
+            <button class="quiz-option" data-value="gpu" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用显卡的 GPU 实时渲染</span>
+            </button>
+            <button class="quiz-option" data-value="cloud" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>云端 AI 模型处理</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module1')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module1')">重新作答</button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 模块 2: 核心组件架构 -->
+<section class="module" id="module-2">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">02</span>
+      <h1 class="module-title">核心组件架构</h1>
+      <p class="module-subtitle">React 组件如何协作构建这个应用</p>
+    </header>
+
+    <!-- 屏幕 1: 组件概览 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">认识三个核心组件</h2>
+      <p class="animate-in">
+        Film Lab 的界面由三个核心 React 组件协作完成：<code>page.tsx</code>（主页面）、<code>FilmItem.tsx</code>（胶片卡片）和 WebGL 处理器。它们各司其职，又紧密配合。
+      </p>
+
+      <div class="arch-diagram animate-in">
+        <div class="arch-zone">
+          <h4 class="arch-zone-label">组件层级</h4>
+          <div class="arch-component" data-desc="整个应用的入口，管理所有状态（当前胶片、调整参数、图片数据等），协调各个子组件的交互" onclick="showArchDesc(this)">
+            <div class="arch-icon">🏠</div>
+            <span>page.tsx</span>
+          </div>
+          <div class="arch-component" data-desc="负责渲染单个胶片预设的缩略图卡片，处理点击事件，显示激活状态" onclick="showArchDesc(this)">
+            <div class="arch-icon">🎴</div>
+            <span>FilmItem</span>
+          </div>
+          <div class="arch-component" data-desc="WebGL 图像处理的核心类，封装了所有的 GPU 操作和渲染逻辑" onclick="showArchDesc(this)">
+            <div class="arch-icon">🎨</div>
+            <span>WebGLProcessor</span>
+          </div>
+        </div>
+        <div class="arch-description" id="arch-desc-module2">点击上方组件了解其职责</div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: 数据流动画 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">数据如何流动</h2>
+      <p class="animate-in">
+        当你点击一个胶片预设时，数据是这样流转的：FilmItem 组件被点击 → page.tsx 更新状态 → WebGLProcessor 重新渲染图像 → 画布更新。
+      </p>
+
+      <div class="flow-animation animate-in" data-steps='[
+        {"highlight":"flow-actor-1","label":"用户点击 Kodak Portra 400 胶片卡片"},
+        {"highlight":"flow-actor-2","label":"FilmItem 调用 onClick 回调函数","packet":true,"from":"actor-1","to":"actor-2"},
+        {"highlight":"flow-actor-2","label":"page.tsx 更新 currentFilm 状态","packet":true,"from":"actor-2","to":"actor-3"},
+        {"highlight":"flow-actor-3","label":"WebGLProcessor 加载胶片风格参数","packet":true,"from":"actor-3","to":"actor-4"},
+        {"highlight":"flow-actor-4","label":"Canvas 画布重新渲染并显示新效果","packet":true,"from":"actor-4","to":"actor-5"}
+      ]'>
+        <div class="flow-actors">
+          <div class="flow-actor" id="flow-actor-1">
+            <div class="flow-actor-icon">👆</div>
+            <span>用户点击</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-2">
+            <div class="flow-actor-icon">🎴</div>
+            <span>FilmItem</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-3">
+            <div class="flow-actor-icon">⚛️</div>
+            <span>page.tsx</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-4">
+            <div class="flow-actor-icon">🎨</div>
+            <span>WebGL</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-5">
+            <div class="flow-actor-icon">🖼️</div>
+            <span>Canvas</span>
+          </div>
+        </div>
+
+        <div class="flow-packet" id="flow-packet"></div>
+
+        <div class="flow-step-label" id="flow-label">点击 "下一步" 查看数据流动过程</div>
+
+        <div class="flow-controls">
+          <button class="btn flow-next-btn">下一步</button>
+          <button class="btn flow-reset-btn">重新开始</button>
+          <span class="flow-progress"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: 状态管理 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">状态管理的艺术</h2>
+      <p class="animate-in">
+        page.tsx 管理着应用的所有核心状态。让我们看看它用 <span class="term" data-definition="React Hook 是 React 16.8 引入的新特性，让函数组件也能使用状态（useState）和副作用（useEffect）等 React 特性，无需编写类组件。">React Hooks</span> 管理了哪些数据：
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-keyword">const</span> [currentFilm, setCurrentFilm] = <span class="code-function">useState</span>&lt;<span class="code-keyword">string</span> | <span class="code-keyword">null</span>&gt;(<span class="code-keyword">null</span>);</span>
+<span class="code-line"><span class="code-keyword">const</span> [params, setParams] = <span class="code-function">useState</span>&lt;AdjustParams&gt;({...});</span>
+<span class="code-line"><span class="code-keyword">const</span> [hasImage, setHasImage] = <span class="code-function">useState</span>(<span class="code-keyword">false</span>);</span>
+<span class="code-line"><span class="code-keyword">const</span> [mode, setMode] = <span class="code-function">useState</span>&lt;Mode&gt;(<span class="code-string">'presets'</span>);</span>
+<span class="code-line"><span class="code-keyword">const</span> canvasRef = <span class="code-function">useRef</span>&lt;HTMLCanvasElement&gt;(<span class="code-keyword">null</span>);</span>
+<span class="code-line"><span class="code-keyword">const</span> glRef = <span class="code-function">useRef</span>&lt;WebGLProcessor | <span class="code-keyword">null</span>&gt;(<span class="code-keyword">null</span>);</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">当前选中的胶片 ID（如 'kodak'），null 表示未选择</p>
+            <p class="tl">所有调整参数（曝光、对比度、色温等 12 个值）</p>
+            <p class="tl">布尔值：用户是否已上传图片</p>
+            <p class="tl">当前面板模式：'presets' 预设面板 或 'adjust' 调整面板</p>
+            <p class="tl">用 useRef 获取 Canvas DOM 元素的引用</p>
+            <p class="tl">用 useRef 持久保存 WebGL 处理器实例（不触发重渲染）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">📝</div>
+        <div class="callout-content">
+          <strong class="callout-title">useState vs useRef</strong>
+          <p>useState 适合存储会改变并需要更新 UI 的数据（如当前选中的胶片）。useRef 适合存储不需要触发界面更新的数据（如 WebGL 实例），或者在多次渲染之间保持不变的引用。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: FilmItem 组件 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">FilmItem 组件详解</h2>
+      <p class="animate-in">
+        FilmItem 是一个纯展示组件，接收 film 数据、是否激活状态和点击回调，渲染一个胶片缩略图卡片。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-keyword">export default function</span> <span class="code-function">FilmItem</span>({ film, isActive, onClick }: FilmItemProps) {</span>
+<span class="code-line">  <span class="code-keyword">return</span> (</span>
+<span class="code-line">    &lt;<span class="code-tag">div</span></span>
+<span class="code-line">      <span class="code-attr">className</span>={<span class="code-string">`film-item ${isActive ? 'active' : ''}`</span>}</span>
+<span class="code-line">      <span class="code-attr">onClick</span>={onClick}</span>
+<span class="code-line">    &gt;</span>
+<span class="code-line">      &lt;<span class="code-tag">Image</span> <span class="code-attr">src</span>={<span class="code-string">`/films/${film.img}`</span>} <span class="code-attr">alt</span>={film.name} /&gt;</span>
+<span class="code-line">      &lt;<span class="code-tag">span</span>&gt;{film.name}&lt;/<span class="code-tag">span</span>&gt;</span>
+<span class="code-line">    &lt;/<span class="code-tag">div</span>&gt;</span>
+<span class="code-line">  );</span>
+<span class="code-line">}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">定义 FilmItem 组件，接收三个属性参数</p>
+            <p class="tl">返回 JSX 结构</p>
+            <p class="tl">外层 div，CSS 类名根据 isActive 动态变化</p>
+            <p class="tl">如果激活就加上 'active' 类，显示橙色边框</p>
+            <p class="tl">点击时调用父组件传入的 onClick 函数</p>
+            <p class="tl">使用 Next.js Image 组件加载胶片缩略图</p>
+            <p class="tl">显示胶片名称（如 "Portra 400"）</p>
+            <p class="tl">结束 div 标签</p>
+            <p class="tl">结束 return</p>
+            <p class="tl">结束函数定义</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 5: 小测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">小测验</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module2">
+        <div class="scenario-block">
+          <div class="scenario-context">
+            <span class="scenario-label">场景</span>
+            <p>你想给 Film Lab 添加一个新的功能：让用户可以保存自己调整好的参数为一个新的自定义预设。</p>
+          </div>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="state"
+             data-explanation-right="正确！你需要添加一个新的 useState 来存储用户的自定义预设列表。这个状态需要在 page.tsx 中管理，因为它需要在多个地方被访问和更新。"
+             data-explanation-wrong="不对。虽然 localStorage 可以用来持久化存储，但应用运行时的新预设列表应该用 useState 管理。useRef 不会触发重渲染，useEffect 是用来处理副作用的，都不能直接存储列表数据。">
+          <h3 class="quiz-question">你会用什么来存储这个新的"自定义预设列表"？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="state" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用 useState 创建一个新状态</span>
+            </button>
+            <button class="quiz-option" data-value="ref" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用 useRef 存储列表引用</span>
+            </button>
+            <button class="quiz-option" data-value="effect" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>在 useEffect 中直接操作</span>
+            </button>
+            <button class="quiz-option" data-value="storage" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>只用 localStorage，不用 React 状态</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module2')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module2')">重新作答</button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 模块 3: WebGL 图像处理 -->
+<section class="module" id="module-3">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">03</span>
+      <h1 class="module-title">WebGL 图像处理</h1>
+      <p class="module-subtitle">用 GPU 加速实现专业级胶片效果</p>
+    </header>
+
+    <!-- 屏幕 1: WebGL 简介 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">为什么用 WebGL？</h2>
+      <p class="animate-in">
+        图像处理需要大量的像素运算。一张 4K 图片有 800 多万个像素，每个像素都要进行颜色矩阵乘法、曲线映射、模糊计算...如果用 JavaScript 在 CPU 上逐像素处理，可能要等好几秒。
+      </p>
+      <p class="animate-in">
+        <span class="term" data-definition="WebGL（Web Graphics Library）是一种 JavaScript API，用于在浏览器中渲染交互式 2D 和 3D 图形，无需插件，直接使用 GPU 加速。">WebGL</span> 让浏览器可以直接调用 <span class="term" data-definition="GPU（Graphics Processing Unit，图形处理器）是专门设计用于并行处理图形计算的芯片，拥有成百上千个小核心，可以同时处理大量数据。">GPU</span> 进行并行计算——800 万个像素同时处理，瞬间完成。
+      </p>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">⚡</div>
+        <div class="callout-content">
+          <strong class="callout-title">性能对比</strong>
+          <p>CPU 处理：串行执行，一个像素一个像素计算，4K 图片可能需要 2-3 秒。<br>GPU 处理：并行执行，同时计算成千上万个像素，同样的 4K 图片只需要 16-33 毫秒（一帧的时间）。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: WebGL 处理流程 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">图像处理管线</h2>
+      <p class="animate-in">
+        Film Lab 的 WebGLProcessor 类封装了一整套图像处理管线。原始图片进入管线，经过多个阶段的处理，最终输出带胶片效果的图像。
+      </p>
+
+      <div class="flow-steps animate-in">
+        <div class="flow-step">
+          <div class="flow-step-num">1</div>
+          <p>加载原图<br>到 WebGL 纹理</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">2</div>
+          <p>基础处理<br>色彩矩阵/曲线</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">3</div>
+          <p>光效叠加<br>光晕/柔光</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">4</div>
+          <p>颗粒合成<br>胶片质感</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">5</div>
+          <p>最终调整<br>曝光/对比度</p>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">🎨</div>
+        <div class="callout-content">
+          <strong class="callout-title">纹理（Texture）</strong>
+          <p>在 WebGL 中，图片被上传到 GPU 后称为"纹理"（Texture）。就像给 3D 模型贴图一样，我们可以对这些纹理进行各种采样和计算操作。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: GLSL 着色器 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">GLSL 着色器</h2>
+      <p class="animate-in">
+        <span class="term" data-definition="GLSL（OpenGL Shading Language）是一种类似 C 语言的编程语言，专门用于编写在 GPU 上运行的着色器程序，控制图形渲染的每个像素如何计算。">GLSL</span> 是在 GPU 上运行的程序语言。Film Lab 编写了多个"着色器"来处理不同的图像效果。每个着色器接收输入纹理，输出处理后的像素颜色。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-keyword">uniform</span> <span class="code-keyword">sampler2D</span> u_image;</span>
+<span class="code-line"><span class="code-keyword">in</span> <span class="code-keyword">vec2</span> v_texCoord;</span>
+<span class="code-line"><span class="code-keyword">out</span> <span class="code-keyword">vec4</span> outColor;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">void</span> <span class="code-function">main</span>() {</span>
+<span class="code-line">  <span class="code-keyword">vec3</span> color = <span class="code-function">texture</span>(u_image, v_texCoord).rgb;</span>
+<span class="code-line">  </span>
+<span class="code-line">  <span class="code-comment">// 应用白平衡</span></span>
+<span class="code-line">  color *= u_wb;</span>
+<span class="code-line">  </span>
+<span class="code-line">  <span class="code-comment">// 应用色彩矩阵</span></span>
+<span class="code-line">  color = <span class="code-function">clamp</span>(u_matrix * color, 0.0, 1.0);</span>
+<span class="code-line">  </span>
+<span class="code-line">  outColor = <span class="code-function">vec4</span>(color, 1.0);</span>
+<span class="code-line">}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">声明输入纹理（要处理的图片）</p>
+            <p class="tl">纹理坐标（当前处理哪个位置的像素）</p>
+            <p class="tl">输出颜色（处理后的像素值）</p>
+            <p class="tl">空行</p>
+            <p class="tl">主函数开始</p>
+            <p class="tl">从纹理中采样当前像素的颜色</p>
+            <p class="tl">空行</p>
+            <p class="tl">注释：应用白平衡调整</p>
+            <p class="tl">乘以白平衡系数（RGB 分别调整）</p>
+            <p class="tl">空行</p>
+            <p class="tl">注释：应用 3x3 色彩变换矩阵</p>
+            <p class="tl">矩阵乘法并限制在 0-1 范围内</p>
+            <p class="tl">空行</p>
+            <p class="tl">输出最终颜色（RGB + Alpha）</p>
+            <p class="tl">函数结束</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-warning animate-in">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-content">
+          <strong class="callout-title">着色器在 GPU 上并行运行</strong>
+          <p>上面的代码会同时在 GPU 的成百上千个核心上运行，每个核心处理一个像素。这就是为什么不能有"if-else"分支处理不同位置的像素——所有像素必须走相同的代码路径，只是输入数据不同。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: 渲染流程代码 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">渲染函数解析</h2>
+      <p class="animate-in">
+        当用户调整滑块时，render 函数会被调用。它把所有调整参数传递给 GPU，然后执行最终的合成着色器。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-function">render</span>(width, height, params, isCompare) {</span>
+<span class="code-line">  <span class="code-keyword">this</span>.canvas.width = width;</span>
+<span class="code-line">  <span class="code-keyword">this</span>.canvas.height = height;</span>
+<span class="code-line">  </span>
+<span class="code-line">  <span class="code-keyword">this</span>.<span class="code-function">drawTo</span>(<span class="code-keyword">null</span>, <span class="code-keyword">this</span>.adjustProgram, () => {</span>
+<span class="code-line">    gl.<span class="code-function">uniform1f</span>(uniforms.u_opacity, params.opacity / 100);</span>
+<span class="code-line">    gl.<span class="code-function">uniform1f</span>(uniforms.u_exposure, params.exposure / 50);</span>
+<span class="code-line">    gl.<span class="code-function">uniform1f</span>(uniforms.u_contrast, params.contrast / 50);</span>
+<span class="code-line">    <span class="code-comment">// ... 更多参数</span></span>
+<span class="code-line">    gl.<span class="code-function">uniform1i</span>(uniforms.u_is_compare, isCompare ? 1 : 0);</span>
+<span class="code-line">  }, {</span>
+<span class="code-line">    u_image0: <span class="code-keyword">this</span>.texOriginal,</span>
+<span class="code-line">    u_image1: filmTarget.tex</span>
+<span class="code-line">  });</span>
+<span class="code-line">}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">定义 render 函数，接收尺寸、参数和是否对比模式</p>
+            <p class="tl">设置画布宽度</p>
+            <p class="tl">设置画布高度</p>
+            <p class="tl">空行</p>
+            <p class="tl">调用 drawTo 执行渲染（null 表示输出到屏幕）</p>
+            <p class="tl">设置透明度参数（0-1 范围）</p>
+            <p class="tl">设置曝光参数（-1 到 1 范围）</p>
+            <p class="tl">设置对比度参数</p>
+            <p class="tl">省略其他参数设置...</p>
+            <p class="tl">设置是否显示对比模式</p>
+            <p class="tl">开始传入纹理绑定</p>
+            <p class="tl">原图纹理</p>
+            <p class="tl">胶片效果纹理</p>
+            <p class="tl">结束 drawTo 调用</p>
+            <p class="tl">函数结束</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 5: 多通道渲染 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">多通道渲染</h2>
+      <p class="animate-in">
+        复杂的胶片效果不能一次完成，需要分多个"通道"（Pass）渲染。每个通道输出到临时纹理，下一个通道读取上一个通道的结果，层层叠加。
+      </p>
+
+      <div class="layer-demo animate-in">
+        <div class="layer-tabs">
+          <button class="layer-tab active" onclick="showLayer('layer-base', this)">基础处理</button>
+          <button class="layer-tab" onclick="showLayer('layer-bloom', this)">+ 光晕</button>
+          <button class="layer-tab" onclick="showLayer('layer-grain', this)">+ 颗粒</button>
+          <button class="layer-tab" onclick="showLayer('layer-final', this)">+ 最终</button>
+        </div>
+        <div class="layer-viewport">
+          <div class="layer" id="layer-base" style="display:block; padding: 20px; background: #1a1a2e; color: #cdd6f4;">
+            <strong>第一步：基础处理</strong><br><br>
+            白平衡调整 → 色彩矩阵变换 → 曲线映射 → 黑白转换（可选）<br><br>
+            输入：原始图片<br>
+            输出：基础色调调整后的图片
+          </div>
+          <div class="layer" id="layer-bloom" style="display:none; padding: 20px; background: #1a1a2e; color: #cdd6f4;">
+            <strong>第二步：光晕效果（Bloom）</strong><br><br>
+            提取高光区域 → 高斯模糊 → 叠加到原图<br><br>
+            效果：让亮部产生柔和的"发光"感，模拟胶片的高光特性
+          </div>
+          <div class="layer" id="layer-grain" style="display:none; padding: 20px; background: #1a1a2e; color: #cdd6f4;">
+            <strong>第三步：颗粒效果</strong><br><br>
+            生成随机噪声纹理 → 高通滤波 → 按亮度混合<br><br>
+            效果：添加胶片特有的颗粒质感，让数字照片更像胶片
+          </div>
+          <div class="layer" id="layer-final" style="display:none; padding: 20px; background: #1a1a2e; color: #cdd6f4;">
+            <strong>第四步：最终合成</strong><br><br>
+            叠加光晕图层 → 叠加颗粒图层 → 应用用户调整参数<br><br>
+            输出：最终显示在屏幕上的图像
+          </div>
+        </div>
+        <p class="layer-description" id="layer-desc-module3">点击上方标签查看每一层的作用</p>
+      </div>
+    </div>
+
+    <!-- 屏幕 6: 小测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">小测验</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module3">
+        <div class="quiz-question-block"
+             data-correct="texture"
+             data-explanation-right="正确！WebGL 使用纹理（Texture）来存储和传递图像数据。帧缓冲区（FBO）是用来接收渲染结果的目标，着色器（Shader）是处理程序，uniform 是传递参数的变量类型。"
+             data-explanation-wrong="不对。虽然帧缓冲区也很重要，但题目问的是"传递给着色器"的数据类型。纹理是专门用来在着色器中采样图像数据的类型。">
+          <h3 class="quiz-question">在 WebGL 中，图片上传到 GPU 后被称为什么？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="buffer" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Buffer（缓冲区）</span>
+            </button>
+            <button class="quiz-option" data-value="texture" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Texture（纹理）</span>
+            </button>
+            <button class="quiz-option" data-value="shader" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Shader（着色器）</span>
+            </button>
+            <button class="quiz-option" data-value="uniform" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Uniform（统一变量）</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="parallel"
+             data-explanation-right="正确！GPU 的架构优势在于并行处理。成百上千个核心同时工作，每个处理一个像素。这是 GPU 处理图像比 CPU 快得多的根本原因。"
+             data-explanation-wrong="不对。虽然现代 CPU 也有多核，但 GPU 的核心数量远超 CPU，设计上就是为大规模并行计算而生。图像处理这种"每个像素做同样的事"的场景，正是 GPU 最擅长的。">
+          <h3 class="quiz-question">为什么 GPU 处理图像比 CPU 快得多？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="clock" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>GPU 的时钟频率更高</span>
+            </button>
+            <button class="quiz-option" data-value="memory" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>GPU 的内存更大</span>
+            </button>
+            <button class="quiz-option" data-value="parallel" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>GPU 可以同时处理成千上万个像素</span>
+            </button>
+            <button class="quiz-option" data-value="cache" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>GPU 的缓存更大</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module3')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module3')">重新作答</button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 模块 4: 胶片预设系统 -->
+<section class="module" id="module-4">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">04</span>
+      <h1 class="module-title">胶片预设系统</h1>
+      <p class="module-subtitle">如何用代码"模拟"真实胶片的色彩科学</p>
+    </header>
+
+    <!-- 屏幕 1: 胶片模拟原理 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">胶片为什么看起来不一样？</h2>
+      <p class="animate-in">
+        每种胶片都有独特的"性格"。Kodak Portra 擅长肤色，Fuji 偏绿，CineStill 有标志性的红色光晕。这些差异来自胶片的化学配方和显影工艺。
+      </p>
+      <p class="animate-in">
+        数字模拟的核心是：<strong>用数学公式复制这些化学特性</strong>。Film Lab 使用了四种主要技术：色彩矩阵、曲线映射、光晕效果和颗粒生成。
+      </p>
+
+      <div class="pattern-cards animate-in">
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+          <div class="pattern-icon" style="background: var(--color-actor-1)">🔢</div>
+          <h4 class="pattern-title">色彩矩阵</h4>
+          <p class="pattern-desc">3x3 矩阵重新映射 RGB 通道，改变整体色彩倾向</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+          <div class="pattern-icon" style="background: var(--color-actor-2)">📈</div>
+          <h4 class="pattern-title">曲线映射</h4>
+          <p class="pattern-desc">非线性函数调整亮部和暗部的响应，控制对比度</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+          <div class="pattern-icon" style="background: var(--color-actor-3)">✨</div>
+          <h4 class="pattern-title">光晕效果</h4>
+          <p class="pattern-desc">高斯模糊模拟胶片高光"渗开"的物理特性</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-4)">
+          <div class="pattern-icon" style="background: var(--color-actor-4)">🌾</div>
+          <h4 class="pattern-title">颗粒生成</h4>
+          <p class="pattern-desc">随机噪声模拟胶片银盐颗粒的质感</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: 色彩矩阵 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">色彩矩阵变换</h2>
+      <p class="animate-in">
+        <span class="term" data-definition="色彩矩阵（Color Matrix）是一个 3x3 的矩阵，用于对 RGB 三个颜色通道进行线性组合，可以改变图像的整体色彩倾向。">色彩矩阵</span> 是最基础的色彩调整方式。通过 3x3 矩阵，我们可以重新混合红、绿、蓝三个通道的比例。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-comment">// Kodak Portra 400 的色彩矩阵</span></span>
+<span class="code-line">matrix: [</span>
+<span class="code-line">  <span class="code-number">0.92</span>, <span class="code-number">0.05</span>, <span class="code-number">0.03</span>,  <span class="code-comment">// 新 R = 0.92*R + 0.05*G + 0.03*B</span></span>
+<span class="code-line">  <span class="code-number">0.00</span>, <span class="code-number">0.98</span>, <span class="code-number">0.02</span>,  <span class="code-comment">// 新 G = 0.00*R + 0.98*G + 0.02*B</span></span>
+<span class="code-line">  <span class="code-number">0.04</span>, <span class="code-number">0.08</span>, <span class="code-number">0.88</span>   <span class="code-comment">// 新 B = 0.04*R + 0.08*G + 0.88*B</span></span>
+<span class="code-line">]</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：这是柯达 Portra 400 胶片的色彩矩阵配置</p>
+            <p class="tl">矩阵开始</p>
+            <p class="tl">第一行：新的红色通道 = 92%原红 + 5%原绿 + 3%原蓝</p>
+            <p class="tl">第二行：新的绿色通道 = 0%原红 + 98%原绿 + 2%原蓝</p>
+            <p class="tl">第三行：新的蓝色通道 = 4%原红 + 8%原绿 + 88%原蓝</p>
+            <p class="tl">矩阵结束</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content">
+          <strong class="callout-title">Portra 的"肤色保护"</strong>
+          <p>观察上面的矩阵：绿色通道几乎保持不变（98%），红色通道略微降低（92%），蓝色通道明显降低（88%）。这种组合让肤色更暖、更自然，是 Portra 胶片备受人像摄影师喜爱的原因。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: 曲线映射 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">曲线映射</h2>
+      <p class="animate-in">
+        <span class="term" data-definition="曲线映射（Curve Mapping）是一种通过控制点定义的非线性变换函数，可以精确控制不同亮度区域的输出，是调色中最强大的工具之一。">曲线映射</span> 让胶片可以对不同亮度区域做不同的处理。比如让暗部更实、亮部更柔，这就是胶片特有的"宽容度"。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-comment">// Fuji Pro 400H 的曲线</span></span>
+<span class="code-line">curve: [</span>
+<span class="code-line">  [<span class="code-number">0</span>,   <span class="code-number">0</span>],   <span class="code-comment">// 输入 0 → 输出 0（纯黑保持）</span></span>
+<span class="code-line">  [<span class="code-number">40</span>, <span class="code-number">38</span>],   <span class="code-comment">// 输入 40 → 输出 38（暗部微压）</span></span>
+<span class="code-line">  [<span class="code-number">128</span>, <span class="code-number">135</span>], <span class="code-comment">// 输入 128 → 输出 135（中间调提亮）</span></span>
+<span class="code-line">  [<span class="code-number">220</span>, <span class="code-number">232</span>], <span class="code-comment">// 输入 220 → 输出 232（亮部提升）</span></span>
+<span class="code-line">  [<span class="code-number">255</span>, <span class="code-number">252</span>]  <span class="code-comment">// 输入 255 → 输出 252（纯白微压）</span></span>
+<span class="code-line">]</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：Fuji Pro 400H 胶片的曲线配置</p>
+            <p class="tl">曲线控制点数组开始</p>
+            <p class="tl">第1点：输入0(纯黑) → 输出0，保持纯黑</p>
+            <p class="tl">第2点：输入40(暗部) → 输出38，略微压缩</p>
+            <p class="tl">第3点：输入128(中间调) → 输出135，提亮</p>
+            <p class="tl">第4点：输入220(亮部) → 输出232，明显提升</p>
+            <p class="tl">第5点：输入255(纯白) → 输出252，略微压缩</p>
+            <p class="tl">数组结束</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">🎨</div>
+        <div class="callout-content">
+          <strong class="callout-title">Fuji 的" airy look"</strong>
+          <p>Fuji 胶片的特点是亮部特别通透。看曲线：220 的输入被映射到 232 的输出，这意味着亮部被整体提亮，产生那种"空气感"。同时纯白微压（252）防止过曝死白。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: CineStill 光晕效果 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">CineStill 的红色光晕</h2>
+      <p class="animate-in">
+        CineStill 800T 是最有辨识度的胶片之一。它是电影胶片（Tungsten 灯光片）去掉 <span class="term" data-definition="Remjet 层是电影胶片背面的一层黑色碳层，用于防止曝光时的光反射和静电。去掉它后，光线会在胶片层间反射，产生独特的红色光晕。">Remjet 层</span> 后的产物，高亮区域会产生标志性的红色光晕。
+      </p>
+
+      <div class="group-chat animate-in" id="chat-cinestill">
+        <div class="chat-messages">
+          <div class="chat-message" data-sender="user" style="display:none">
+            <div class="chat-avatar" style="background: var(--color-actor-1)">U</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-1)">用户</span>
+              <p>为什么 CineStill 照片的红色灯光会有那种弥散的效果？</p>
+            </div>
+          </div>
+          <div class="chat-message" data-sender="film" style="display:none">
+            <div class="chat-avatar" style="background: var(--color-actor-2)">F</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-2)">胶片结构</span>
+              <p>普通电影胶片有一层叫 Remjet 的黑色背层，但 CineStill 把它去掉了...</p>
+            </div>
+          </div>
+          <div class="chat-message" data-sender="light" style="display:none">
+            <div class="chat-avatar" style="background: var(--color-actor-3)">L</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-3)">高光</span>
+              <p>当强光进入胶片时，会在片基层里散射，再从边缘反射回来，就形成了光晕！</p>
+            </div>
+          </div>
+          <div class="chat-message" data-sender="code" style="display:none">
+            <div class="chat-avatar" style="background: var(--color-actor-4)">C</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-4)">代码模拟</span>
+              <p>我用高斯模糊提取高光，然后加上橙红色调，再叠加回去，就模拟出这种效果了~</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-typing" style="display:none">
+          <div class="chat-avatar">?</div>
+          <div class="chat-typing-dots">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        </div>
+
+        <div class="chat-controls">
+          <button class="btn chat-next-btn">下一条</button>
+          <button class="btn chat-all-btn">全部播放</button>
+          <button class="btn chat-reset-btn">重新开始</button>
+          <span class="chat-progress"></span>
+        </div>
+      </div>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-comment">// CineStill 光晕效果配置</span>
+halation: {
+  threshold: <span class="code-number">0.85</span>,      <span class="code-comment">// 只处理亮度>85%的区域</span>
+  strength: <span class="code-number">0.6</span>,       <span class="code-comment">// 光晕强度</span>
+  colorShift: [<span class="code-number">1.8</span>, <span class="code-number">0.4</span>, <span class="code-number">0.1</span>], <span class="code-comment">// 橙红色调</span>
+  sigmaSmall: <span class="code-number">8</span>,       <span class="code-comment">// 小范围模糊</span>
+  sigmaLarge: <span class="code-number">20</span>       <span class="code-comment">// 大范围模糊</span>
+}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：CineStill 光晕效果配置</p>
+            <p class="tl">亮度阈值：只有超过85%亮度的高光才会产生光晕</p>
+            <p class="tl">强度：光晕效果的强弱程度（0.6=60%）</p>
+            <p class="tl">颜色偏移：RGB分别为1.8(红)、0.4(绿)、0.1(蓝)=橙色</p>
+            <p class="tl">小模糊半径：产生清晰的核心光晕</p>
+            <p class="tl">大模糊半径：产生弥散的边缘光晕</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 5: 颗粒生成 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">胶片颗粒的秘密</h2>
+      <p class="animate-in">
+        胶片颗粒不是简单的"噪声"，而是有结构的。亮部颗粒细、暗部颗粒粗，彩色胶片还有色度颗粒和亮度颗粒的区别。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-comment">// 频谱颗粒生成（Spectral Grain）</span>
+<span class="code-function">buildSpectralGrain</span>(width, height, intensity) {
+  <span class="code-comment">// 1. 生成随机噪声纹理</span>
+  <span class="code-keyword">const</span> noiseTex = <span class="code-keyword">this</span>.<span class="code-function">ensureNoiseTexture</span>(...);
+
+  <span class="code-comment">// 2. 高通滤波提取细颗粒</span>
+  <span class="code-keyword">const</span> fineTex = <span class="code-keyword">this</span>.<span class="code-function">buildHighpassLuma</span>(noiseTex, ...);
+
+  <span class="code-comment">// 3. 可选：模糊产生粗颗粒</span>
+  <span class="code-keyword">if</span> (softness > <span class="code-number">0.001</span>) {
+    <span class="code-keyword">const</span> blurred = <span class="code-keyword">this</span>.<span class="code-function">blurTexture</span>(noiseTex, softness);
+  }
+
+  <span class="code-comment">// 4. 按亮度混合（亮部颗粒少，暗部颗粒多）</span>
+  <span class="code-keyword">return</span> { mainTex, fineTex };
+}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：频谱颗粒生成技术</p>
+            <p class="tl">方法定义开始</p>
+            <p class="tl">步骤1：生成基础随机噪声</p>
+            <p class="tl">步骤2：高通滤波提取高频细节（细颗粒）</p>
+            <p class="tl">步骤3：如果需要软颗粒效果，进行模糊处理</p>
+            <p class="tl">步骤4：根据图像亮度混合颗粒（亮部少暗部多）</p>
+            <p class="tl">返回粗细两种颗粒纹理</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">🔬</div>
+        <div class="callout-content">
+          <strong class="callout-title">为什么叫"频谱"颗粒？</strong>
+          <p>真实胶片颗粒有不同的"尺寸"。高通滤波提取的是高频（细颗粒），模糊后的是低频（粗颗粒）。把不同频率的颗粒叠加，就能得到自然的颗粒结构——就像音频里的低音+高音组成完整音乐一样。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 6: 胶片预设数据结构 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">胶片预设数据结构</h2>
+      <p class="animate-in">
+        每种胶片都是一个 JavaScript 对象，包含基础处理、光晕效果和颗粒参数三部分。Film Lab 支持 10+ 种胶片预设。
+      </p>
+
+      <div class="file-tree animate-in">
+        <div class="ft-folder open">
+          <span class="ft-name">FILM_STYLE</span>
+          <span class="ft-desc">胶片预设对象集合</span>
+          <div class="ft-children">
+            <div class="ft-file">
+              <span class="ft-name">kodak</span>
+              <span class="ft-desc">Portra 400 - 人像首选，肤色保护</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">fuji</span>
+              <span class="ft-desc">Pro 400H - 日系清新，亮部通透</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">cinestill</span>
+              <span class="ft-desc">800T - 电影感，红色光晕</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">ilford</span>
+              <span class="ft-desc">HP5 - 经典黑白，高对比</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">polaroid</span>
+              <span class="ft-desc">宝丽来 - 复古，柔光</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">...</span>
+              <span class="ft-desc">还有更多：Gold 200、Ricoh GR 等</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 7: 小测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">小测验</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module4">
+        <div class="dnd-container">
+          <p style="margin-bottom: 16px; color: var(--color-text-secondary);">拖拽胶片特点到对应的描述：</p>
+          <div class="dnd-chips">
+            <div class="dnd-chip" draggable="true" data-answer="portra">肤色保护</div>
+            <div class="dnd-chip" draggable="true" data-answer="fuji">亮部通透</div>
+            <div class="dnd-chip" draggable="true" data-answer="cinestill">红色光晕</div>
+            <div class="dnd-chip" draggable="true" data-answer="ilford">黑白高对比</div>
+          </div>
+          <div class="dnd-zones">
+            <div class="dnd-zone" data-correct="portra">
+              <p class="dnd-zone-label">Kodak Portra 400 特点</p>
+              <div class="dnd-zone-target">拖到这里</div>
+            </div>
+            <div class="dnd-zone" data-correct="fuji">
+              <p class="dnd-zone-label">Fuji Pro 400H 特点</p>
+              <div class="dnd-zone-target">拖到这里</div>
+            </div>
+            <div class="dnd-zone" data-correct="cinestill">
+              <p class="dnd-zone-label">CineStill 800T 特点</p>
+              <div class="dnd-zone-target">拖到这里</div>
+            </div>
+            <div class="dnd-zone" data-correct="ilford">
+              <p class="dnd-zone-label">Ilford HP5 特点</p>
+              <div class="dnd-zone-target">拖到这里</div>
+            </div>
+          </div>
+          <button onclick="checkDnD('quiz-module4')" style="margin-top: 16px;">检查答案</button>
+          <button onclick="resetDnD('quiz-module4')" style="margin-left: 8px;">重置</button>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="curve"
+             data-explanation-right="正确！曲线映射可以对不同亮度区域做不同的处理，比如提亮中间调同时保持暗部，这是矩阵变换做不到的。矩阵变换是对所有像素做同样的线性组合。"
+             data-explanation-wrong="不对。矩阵变换是线性的，对所有像素一视同仁。要实现胶片特有的"暗部实、亮部柔"的效果，必须用曲线映射这种非线性工具。">
+          <h3 class="quiz-question">如果想让"中间调亮一些，但暗部和亮部基本不变"，应该用什么工具？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="matrix" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>色彩矩阵</span>
+            </button>
+            <button class="quiz-option" data-value="curve" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>曲线映射</span>
+            </button>
+            <button class="quiz-option" data-value="blur" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>高斯模糊</span>
+            </button>
+            <button class="quiz-option" data-value="noise" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>噪声生成</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module4')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module4')">重新作答</button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 模块 5: 后端与数据管理 -->
+<section class="module" id="module-5">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">05</span>
+      <h1 class="module-title">后端与数据管理</h1>
+      <p class="module-subtitle">Supabase 访客统计和简单身份验证</p>
+    </header>
+
+    <!-- 屏幕 1: 后端概览 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">Film Lab 的后端架构</h2>
+      <p class="animate-in">
+        Film Lab 主要是一个前端应用，所有图像处理都在浏览器中完成。但它仍然需要一些后端功能：<strong>访客统计</strong>和<strong>管理员认证</strong>。这些功能通过 <span class="term" data-definition="Next.js App Router 是 Next.js 13+ 引入的新路由系统，使用文件系统路由，支持 layouts、loading states 和 API Routes 等新特性。">Next.js App Router</span> 的 API Routes 实现。
+      </p>
+
+      <div class="icon-rows animate-in">
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-1)">📊</div>
+          <div>
+            <strong>访客统计 API</strong>
+            <p>记录访问者 IP、地理位置、访问时间，统计总访问量</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-2)">🔐</div>
+          <div>
+            <strong>管理员认证 API</strong>
+            <p>简单的用户名/密码验证，生成 session token</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-3)">🗄️</div>
+          <div>
+            <strong>Supabase 数据库</strong>
+            <p>托管的 PostgreSQL 数据库，存储访客记录</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">🎯</div>
+        <div class="callout-content">
+          <strong class="callout-title">为什么选择 Supabase？</strong>
+          <p>Supabase 是开源的 Firebase 替代品，提供 PostgreSQL 数据库、实时订阅、身份验证等功能。对于 Film Lab 这样的小项目，免费额度足够使用，而且不需要维护服务器。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: 访客统计流程 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">访客是如何被记录的？</h2>
+      <p class="animate-in">
+        每当用户打开 Film Lab，前端会发送一个请求到 <code>/api/visitors</code>。后端会记录访客信息，同时返回当前总访问量。
+      </p>
+
+      <div class="flow-animation animate-in" data-steps='[
+        {"highlight":"flow-actor-1","label":"用户打开网页"},
+        {"highlight":"flow-actor-2","label":"前端调用 fetch(\"/api/visitors?track=1\")","packet":true,"from":"actor-1","to":"actor-2"},
+        {"highlight":"flow-actor-3","label":"后端从 Cookie 读取 visitor_id","packet":true,"from":"actor-2","to":"actor-3"},
+        {"highlight":"flow-actor-4","label":"新访客：生成 UUID，写入 Supabase","packet":true,"from":"actor-3","to":"actor-4"},
+        {"highlight":"flow-actor-4","label":"返回访客总数和地理位置","packet":true,"from":"actor-4","to":"actor-2"},
+        {"highlight":"flow-actor-1","label":"页面显示 \"VISITORS: 12,345\"","packet":true,"from":"actor-2","to":"actor-1"}
+      ]'>
+        <div class="flow-actors">
+          <div class="flow-actor" id="flow-actor-1">
+            <div class="flow-actor-icon">👤</div>
+            <span>用户浏览器</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-2">
+            <div class="flow-actor-icon">⚛️</div>
+            <span>前端页面</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-3">
+            <div class="flow-actor-icon">🔌</div>
+            <span>API Route</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-4">
+            <div class="flow-actor-icon">🗄️</div>
+            <span>Supabase</span>
+          </div>
+        </div>
+
+        <div class="flow-packet" id="flow-packet"></div>
+
+        <div class="flow-step-label" id="flow-label">点击 "下一步" 查看访客统计流程</div>
+
+        <div class="flow-controls">
+          <button class="btn flow-next-btn">下一步</button>
+          <button class="btn flow-reset-btn">重新开始</button>
+          <span class="flow-progress"></span>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">🍪</div>
+        <div class="callout-content">
+          <strong class="callout-title">Cookie 的作用</strong>
+          <p>每个访客会被分配一个唯一的 UUID，存储在 HTTP-only Cookie 中（有效期一年）。这样同一用户再次访问时，后端能识别出来，避免重复计数。这也是保护隐私的做法——不追踪个人，只记录访问。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: IP 定位 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">IP 地址与地理位置</h2>
+      <p class="animate-in">
+        后端会从请求头中提取用户的 IP 地址，然后查询地理位置信息。这用了一个免费的第三方 API：ip-api.com。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-comment">// 从请求头中获取真实 IP</span></span>
+<span class="code-keyword">function</span> <span class="code-function">getClientIP</span>(request: NextRequest): <span class="code-keyword">string</span> {
+  <span class="code-comment">// Cloudflare 代理</span>
+  <span class="code-keyword">const</span> cfIP = request.headers.<span class="code-function">get</span>(<span class="code-string">'cf-connecting-ip'</span>);
+  <span class="code-keyword">if</span> (cfIP) <span class="code-keyword">return</span> cfIP;
+
+  <span class="code-comment">// 标准代理头</span>
+  <span class="code-keyword">const</span> forwardedFor = request.headers.<span class="code-function">get</span>(<span class="code-string">'x-forwarded-for'</span>);
+  <span class="code-keyword">if</span> (forwardedFor) <span class="code-keyword">return</span> forwardedFor.<span class="code-function">split</span>(<span class="code-string">','</span>)[<span class="code-number">0</span>].<span class="code-function">trim</span>();
+
+  <span class="code-comment">// Nginx 代理</span>
+  <span class="code-keyword">const</span> realIP = request.headers.<span class="code-function">get</span>(<span class="code-string">'x-real-ip'</span>);
+  <span class="code-keyword">if</span> (realIP) <span class="code-keyword">return</span> realIP;
+
+  <span class="code-comment">// 本地开发</span>
+  <span class="code-keyword">return</span> <span class="code-string">'127.0.0.1'</span>;
+}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：获取客户端真实 IP 地址</p>
+            <p class="tl">函数定义</p>
+            <p class="tl">注释：首先尝试 Cloudflare 特定的请求头</p>
+            <p class="tl">从请求头读取 cf-connecting-ip</p>
+            <p class="tl">如果存在，直接返回</p>
+            <p class="tl">注释：然后尝试标准的 X-Forwarded-For 头</p>
+            <p class="tl">获取转发链</p>
+            <p class="tl">取第一个（最原始的）IP 地址</p>
+            <p class="tl">注释：再尝试 Nginx 常用的头</p>
+            <p class="tl">获取 X-Real-IP</p>
+            <p class="tl">如果存在就返回</p>
+            <p class="tl">注释：最后，可能是本地开发环境</p>
+            <p class="tl">返回本地回环地址</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-warning animate-in">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-content">
+          <strong class="callout-title">为什么要检查这么多头？</strong>
+          <p>不同的部署环境使用不同的代理服务器。Vercel 用 Cloudflare，自建服务器可能用 Nginx。如果不检查这些头，得到的可能只是代理服务器的 IP，而不是用户的真实 IP。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: 管理员认证 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">简单的管理员认证</h2>
+      <p class="animate-in">
+        Film Lab 有一个简单的管理后台（<code>/admin</code>），用于查看访客统计数据。进入需要用户名和密码验证。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-comment">// 登录验证</span>
+<span class="code-keyword">export async function</span> <span class="code-function">POST</span>(request: NextRequest) {
+  <span class="code-keyword">const</span> { username, password } = <span class="code-keyword">await</span> request.<span class="code-function">json</span>();
+
+  <span class="code-comment">// 从环境变量读取凭据（默认 zzh/060312）</span>
+  <span class="code-keyword">const</span> adminUser = process.env.<span class="code-property">ADMIN_USERNAME</span> ?? <span class="code-string">'zzh'</span>;
+  <span class="code-keyword">const</span> adminPass = process.env.<span class="code-property">ADMIN_PASSWORD</span> ?? <span class="code-string">'060312'</span>;
+
+  <span class="code-keyword">if</span> (username === adminUser && password === adminPass) {
+    <span class="code-comment">// 生成简单 token：用户名:时间戳 的 base64</span>
+    <span class="code-keyword">const</span> token = Buffer.<span class="code-function">from</span>(<span class="code-string">`${username}:${Date.now()}`</span>)
+      .<span class="code-function">toString</span>(<span class="code-string">'base64'</span>);
+
+    <span class="code-keyword">const</span> response = NextResponse.<span class="code-function">json</span>({ success: <span class="code-keyword">true</span> });
+    response.cookies.<span class="code-function">set</span>(<span class="code-string">'admin_token'</span>, token, {
+      httpOnly: <span class="code-keyword">true</span>,
+      secure: process.env.NODE_ENV === <span class="code-string">'production'</span>,
+      maxAge: <span class="code-number">60</span> * <span class="code-number">60</span> * <span class="code-number">24</span> <span class="code-comment">// 24小时</span>
+    });
+    <span class="code-keyword">return</span> response;
+  }
+
+  <span class="code-keyword">return</span> NextResponse.<span class="code-function">json</span>({ error: <span class="code-string">'ACCESS DENIED'</span> }, { status: <span class="code-number">401</span> });
+}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：处理登录请求的 POST 接口</p>
+            <p class="tl">从请求体解析用户名和密码</p>
+            <p class="tl">注释：优先从环境变量读取，否则用默认值</p>
+            <p class="tl">获取管理员用户名</p>
+            <p class="tl">获取管理员密码</p>
+            <p class="tl">验证凭据是否正确</p>
+            <p class="tl">注释：创建会话 token</p>
+            <p class="tl">把"用户名:当前时间"转成 base64 字符串</p>
+            <p class="tl">准备响应</p>
+            <p class="tl">设置 HTTP-only Cookie</p>
+            <p class="tl">生产环境才用 secure 标记</p>
+            <p class="tl">token 有效期 24 小时</p>
+            <p class="tl">返回成功响应</p>
+            <p class="tl">验证失败返回 401 未授权</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-warning animate-in">
+        <div class="callout-icon">🔒</div>
+        <div class="callout-content">
+          <strong class="callout-title">这不是"生产级"认证</strong>
+          <p>这个认证系统非常简单：没有密码哈希、没有防暴力破解、token 只是 base64 编码。对于个人小项目够用，但如果是商业应用，应该使用专业的认证服务（如 Auth0、Supabase Auth）或实现完整的 session 管理。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 5: 环境变量 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">环境变量的作用</h2>
+      <p class="animate-in">
+        敏感信息（数据库密钥、管理员密码）不应该写在代码里，而是通过<span class="term" data-definition="环境变量（Environment Variables）是在程序运行时才提供的配置值，不存储在代码中，可以保护敏感信息不被泄露到代码仓库。">环境变量</span>传入。Film Lab 需要这些环境变量：
+      </p>
+
+      <div class="badge-list animate-in">
+        <div class="badge-item">
+          <code class="badge-code">SUPABASE_URL</code>
+          <span class="badge-desc">Supabase 项目地址，如 https://xxx.supabase.co</span>
+        </div>
+        <div class="badge-item">
+          <code class="badge-code">SUPABASE_SERVICE_ROLE_KEY</code>
+          <span class="badge-desc">服务端密钥，有完整数据库访问权限（不要泄露！）</span>
+        </div>
+        <div class="badge-item">
+          <code class="badge-code">ADMIN_USERNAME</code>
+          <span class="badge-desc">管理员用户名（可选，默认 zzh）</span>
+        </div>
+        <div class="badge-item">
+          <code class="badge-code">ADMIN_PASSWORD</code>
+          <span class="badge-desc">管理员密码（可选，默认 060312）</span>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">🛡️</div>
+        <div class="callout-content">
+          <strong class="callout-title">Service Role Key 的危险性</strong>
+          <p>Supabase 的 Service Role Key 拥有<b>绕过所有 Row Level Security</b> 的权限。这意味着任何人拿到这个密钥就能读写你的整个数据库。永远只把它放在服务器端，永远不要暴露在浏览器代码中！</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 6: 课程总结 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">课程总结</h2>
+      <p class="animate-in">
+        通过这门课程，你已经了解了 Film Lab 从用户界面到 GPU 图像处理、从胶片模拟算法到后端数据管理的完整技术栈。
+      </p>
+
+      <div class="step-cards animate-in">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>React + Next.js 架构</strong>
+            <p>组件化设计、状态管理、Hooks 的使用模式</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>WebGL 图像处理</strong>
+            <p>GPU 并行计算、GLSL 着色器、多通道渲染管线</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>胶片模拟技术</strong>
+            <p>色彩矩阵、曲线映射、光晕效果、颗粒生成</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>后端与数据</strong>
+            <p>Next.js API Routes、Supabase 集成、简单认证</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">🚀</div>
+        <div class="callout-content">
+          <strong class="callout-title">下一步建议</strong>
+          <p>如果你对某个模块特别感兴趣，可以深入阅读代码：
+          <br>• 想改胶片效果？看 <code>app/lib/webgl/styles.ts</code>
+          <br>• 想学 GLSL？看 <code>app/lib/webgl/shaders.ts</code>
+          <br>• 想加新功能？从 <code>app/page.tsx</code> 开始</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 7: 最终测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">最终测验</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module5">
+        <div class="quiz-question-block"
+             data-correct="webgl"
+             data-explanation-right="正确！WebGL 利用 GPU 的并行计算能力，可以同时处理成千上万个像素。这是 Film Lab 能够实现实时胶片模拟的核心技术。"
+             data-explanation-wrong="不对。虽然其他技术也很重要，但实时高性能图像处理的关键是 WebGL/GPU 加速。纯 Canvas 2D 或 CSS 滤镜都无法达到同样的性能和效果。">
+          <h3 class="quiz-question">Film Lab 能够实现"实时"胶片效果的核心技术是什么？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="canvas" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>HTML5 Canvas 2D API</span>
+            </button>
+            <button class="quiz-option" data-value="css" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>CSS filter 属性</span>
+            </button>
+            <button class="quiz-option" data-value="webgl" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>WebGL + GLSL 着色器</span>
+            </button>
+            <button class="quiz-option" data-value="worker" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Web Worker 多线程</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="curve"
+             data-explanation-right="正确！曲线映射可以对不同亮度区域做不同的处理，这是胶片特有的"暗部实、亮部柔"效果的关键。矩阵变换是线性的，对所有像素一视同仁。"
+             data-explanation-wrong="不对。虽然其他技术也参与胶片模拟，但曲线映射才是控制不同亮度区域响应的核心工具。">
+          <h3 class="quiz-question">在胶片模拟中，什么技术用于实现"亮部柔和、暗部扎实"的效果？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="matrix" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>色彩矩阵变换</span>
+            </button>
+            <button class="quiz-option" data-value="blur" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>高斯模糊</span>
+            </button>
+            <button class="quiz-option" data-value="noise" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>噪声生成</span>
+            </button>
+            <button class="quiz-option" data-value="curve" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>曲线映射</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="cookie"
+             data-explanation-right="正确！Film Lab 使用 HTTP-only Cookie 存储 visitor_id，这样可以识别回访用户，避免重复计数，同时保护用户隐私（不记录个人身份信息）。"
+             data-explanation-wrong="不对。虽然 IP 地址也用于查询地理位置，但识别同一用户的关键是 Cookie 中的 UUID。LocalStorage 不会被使用，SessionStorage 会在关闭页面后消失。">
+          <h3 class="quiz-question">Film Lab 如何识别"同一个用户"多次访问？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="ip" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>只使用 IP 地址</span>
+            </button>
+            <button class="quiz-option" data-value="cookie" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用 Cookie 存储 visitor_id</span>
+            </button>
+            <button class="quiz-option" data-value="local" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用 localStorage 存储 ID</span>
+            </button>
+            <button class="quiz-option" data-value="fingerprint" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用浏览器指纹技术</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module5')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module5')">重新作答</button>
+      </div>
+
+      <div class="callout callout-accent animate-in" style="margin-top: 32px;">
+        <div class="callout-icon">🎉</div>
+        <div class="callout-content">
+          <strong class="callout-title">恭喜完成课程！</strong>
+          <p>你已经掌握了 Film Lab 的核心技术原理。现在你可以更好地使用它，甚至尝试修改和扩展它。继续探索代码，实践是最好的老师！</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  </main>
+
+</body>
+</html>
