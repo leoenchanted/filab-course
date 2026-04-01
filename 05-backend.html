@@ -1,0 +1,407 @@
+<!-- 模块 5: 后端与数据管理 -->
+<section class="module" id="module-5">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">05</span>
+      <h1 class="module-title">后端与数据管理</h1>
+      <p class="module-subtitle">Supabase 访客统计和简单身份验证</p>
+    </header>
+
+    <!-- 屏幕 1: 后端概览 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">Film Lab 的后端架构</h2>
+      <p class="animate-in">
+        Film Lab 主要是一个前端应用，所有图像处理都在浏览器中完成。但它仍然需要一些后端功能：<strong>访客统计</strong>和<strong>管理员认证</strong>。这些功能通过 <span class="term" data-definition="Next.js App Router 是 Next.js 13+ 引入的新路由系统，使用文件系统路由，支持 layouts、loading states 和 API Routes 等新特性。">Next.js App Router</span> 的 API Routes 实现。
+      </p>
+
+      <div class="icon-rows animate-in">
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-1)">📊</div>
+          <div>
+            <strong>访客统计 API</strong>
+            <p>记录访问者 IP、地理位置、访问时间，统计总访问量</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-2)">🔐</div>
+          <div>
+            <strong>管理员认证 API</strong>
+            <p>简单的用户名/密码验证，生成 session token</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-3)">🗄️</div>
+          <div>
+            <strong>Supabase 数据库</strong>
+            <p>托管的 PostgreSQL 数据库，存储访客记录</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">🎯</div>
+        <div class="callout-content">
+          <strong class="callout-title">为什么选择 Supabase？</strong>
+          <p>Supabase 是开源的 Firebase 替代品，提供 PostgreSQL 数据库、实时订阅、身份验证等功能。对于 Film Lab 这样的小项目，免费额度足够使用，而且不需要维护服务器。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: 访客统计流程 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">访客是如何被记录的？</h2>
+      <p class="animate-in">
+        每当用户打开 Film Lab，前端会发送一个请求到 <code>/api/visitors</code>。后端会记录访客信息，同时返回当前总访问量。
+      </p>
+
+      <div class="flow-animation animate-in" data-steps='[
+        {"highlight":"flow-actor-1","label":"用户打开网页"},
+        {"highlight":"flow-actor-2","label":"前端调用 fetch(\"/api/visitors?track=1\")","packet":true,"from":"actor-1","to":"actor-2"},
+        {"highlight":"flow-actor-3","label":"后端从 Cookie 读取 visitor_id","packet":true,"from":"actor-2","to":"actor-3"},
+        {"highlight":"flow-actor-4","label":"新访客：生成 UUID，写入 Supabase","packet":true,"from":"actor-3","to":"actor-4"},
+        {"highlight":"flow-actor-4","label":"返回访客总数和地理位置","packet":true,"from":"actor-4","to":"actor-2"},
+        {"highlight":"flow-actor-1","label":"页面显示 \"VISITORS: 12,345\"","packet":true,"from":"actor-2","to":"actor-1"}
+      ]'>
+        <div class="flow-actors">
+          <div class="flow-actor" id="flow-actor-1">
+            <div class="flow-actor-icon">👤</div>
+            <span>用户浏览器</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-2">
+            <div class="flow-actor-icon">⚛️</div>
+            <span>前端页面</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-3">
+            <div class="flow-actor-icon">🔌</div>
+            <span>API Route</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-4">
+            <div class="flow-actor-icon">🗄️</div>
+            <span>Supabase</span>
+          </div>
+        </div>
+
+        <div class="flow-packet" id="flow-packet"></div>
+
+        <div class="flow-step-label" id="flow-label">点击 "下一步" 查看访客统计流程</div>
+
+        <div class="flow-controls">
+          <button class="btn flow-next-btn">下一步</button>
+          <button class="btn flow-reset-btn">重新开始</button>
+          <span class="flow-progress"></span>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">🍪</div>
+        <div class="callout-content">
+          <strong class="callout-title">Cookie 的作用</strong>
+          <p>每个访客会被分配一个唯一的 UUID，存储在 HTTP-only Cookie 中（有效期一年）。这样同一用户再次访问时，后端能识别出来，避免重复计数。这也是保护隐私的做法——不追踪个人，只记录访问。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: IP 定位 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">IP 地址与地理位置</h2>
+      <p class="animate-in">
+        后端会从请求头中提取用户的 IP 地址，然后查询地理位置信息。这用了一个免费的第三方 API：ip-api.com。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-comment">// 从请求头中获取真实 IP</span></span>
+<span class="code-keyword">function</span> <span class="code-function">getClientIP</span>(request: NextRequest): <span class="code-keyword">string</span> {
+  <span class="code-comment">// Cloudflare 代理</span>
+  <span class="code-keyword">const</span> cfIP = request.headers.<span class="code-function">get</span>(<span class="code-string">'cf-connecting-ip'</span>);
+  <span class="code-keyword">if</span> (cfIP) <span class="code-keyword">return</span> cfIP;
+
+  <span class="code-comment">// 标准代理头</span>
+  <span class="code-keyword">const</span> forwardedFor = request.headers.<span class="code-function">get</span>(<span class="code-string">'x-forwarded-for'</span>);
+  <span class="code-keyword">if</span> (forwardedFor) <span class="code-keyword">return</span> forwardedFor.<span class="code-function">split</span>(<span class="code-string">','</span>)[<span class="code-number">0</span>].<span class="code-function">trim</span>();
+
+  <span class="code-comment">// Nginx 代理</span>
+  <span class="code-keyword">const</span> realIP = request.headers.<span class="code-function">get</span>(<span class="code-string">'x-real-ip'</span>);
+  <span class="code-keyword">if</span> (realIP) <span class="code-keyword">return</span> realIP;
+
+  <span class="code-comment">// 本地开发</span>
+  <span class="code-keyword">return</span> <span class="code-string">'127.0.0.1'</span>;
+}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：获取客户端真实 IP 地址</p>
+            <p class="tl">函数定义</p>
+            <p class="tl">注释：首先尝试 Cloudflare 特定的请求头</p>
+            <p class="tl">从请求头读取 cf-connecting-ip</p>
+            <p class="tl">如果存在，直接返回</p>
+            <p class="tl">注释：然后尝试标准的 X-Forwarded-For 头</p>
+            <p class="tl">获取转发链</p>
+            <p class="tl">取第一个（最原始的）IP 地址</p>
+            <p class="tl">注释：再尝试 Nginx 常用的头</p>
+            <p class="tl">获取 X-Real-IP</p>
+            <p class="tl">如果存在就返回</p>
+            <p class="tl">注释：最后，可能是本地开发环境</p>
+            <p class="tl">返回本地回环地址</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-warning animate-in">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-content">
+          <strong class="callout-title">为什么要检查这么多头？</strong>
+          <p>不同的部署环境使用不同的代理服务器。Vercel 用 Cloudflare，自建服务器可能用 Nginx。如果不检查这些头，得到的可能只是代理服务器的 IP，而不是用户的真实 IP。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: 管理员认证 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">简单的管理员认证</h2>
+      <p class="animate-in">
+        Film Lab 有一个简单的管理后台（<code>/admin</code>），用于查看访客统计数据。进入需要用户名和密码验证。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-comment">// 登录验证</span>
+<span class="code-keyword">export async function</span> <span class="code-function">POST</span>(request: NextRequest) {
+  <span class="code-keyword">const</span> { username, password } = <span class="code-keyword">await</span> request.<span class="code-function">json</span>();
+
+  <span class="code-comment">// 从环境变量读取凭据（默认 zzh/060312）</span>
+  <span class="code-keyword">const</span> adminUser = process.env.<span class="code-property">ADMIN_USERNAME</span> ?? <span class="code-string">'zzh'</span>;
+  <span class="code-keyword">const</span> adminPass = process.env.<span class="code-property">ADMIN_PASSWORD</span> ?? <span class="code-string">'060312'</span>;
+
+  <span class="code-keyword">if</span> (username === adminUser && password === adminPass) {
+    <span class="code-comment">// 生成简单 token：用户名:时间戳 的 base64</span>
+    <span class="code-keyword">const</span> token = Buffer.<span class="code-function">from</span>(<span class="code-string">`${username}:${Date.now()}`</span>)
+      .<span class="code-function">toString</span>(<span class="code-string">'base64'</span>);
+
+    <span class="code-keyword">const</span> response = NextResponse.<span class="code-function">json</span>({ success: <span class="code-keyword">true</span> });
+    response.cookies.<span class="code-function">set</span>(<span class="code-string">'admin_token'</span>, token, {
+      httpOnly: <span class="code-keyword">true</span>,
+      secure: process.env.NODE_ENV === <span class="code-string">'production'</span>,
+      maxAge: <span class="code-number">60</span> * <span class="code-number">60</span> * <span class="code-number">24</span> <span class="code-comment">// 24小时</span>
+    });
+    <span class="code-keyword">return</span> response;
+  }
+
+  <span class="code-keyword">return</span> NextResponse.<span class="code-function">json</span>({ error: <span class="code-string">'ACCESS DENIED'</span> }, { status: <span class="code-number">401</span> });
+}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：处理登录请求的 POST 接口</p>
+            <p class="tl">从请求体解析用户名和密码</p>
+            <p class="tl">注释：优先从环境变量读取，否则用默认值</p>
+            <p class="tl">获取管理员用户名</p>
+            <p class="tl">获取管理员密码</p>
+            <p class="tl">验证凭据是否正确</p>
+            <p class="tl">注释：创建会话 token</p>
+            <p class="tl">把"用户名:当前时间"转成 base64 字符串</p>
+            <p class="tl">准备响应</p>
+            <p class="tl">设置 HTTP-only Cookie</p>
+            <p class="tl">生产环境才用 secure 标记</p>
+            <p class="tl">token 有效期 24 小时</p>
+            <p class="tl">返回成功响应</p>
+            <p class="tl">验证失败返回 401 未授权</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-warning animate-in">
+        <div class="callout-icon">🔒</div>
+        <div class="callout-content">
+          <strong class="callout-title">这不是"生产级"认证</strong>
+          <p>这个认证系统非常简单：没有密码哈希、没有防暴力破解、token 只是 base64 编码。对于个人小项目够用，但如果是商业应用，应该使用专业的认证服务（如 Auth0、Supabase Auth）或实现完整的 session 管理。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 5: 环境变量 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">环境变量的作用</h2>
+      <p class="animate-in">
+        敏感信息（数据库密钥、管理员密码）不应该写在代码里，而是通过<span class="term" data-definition="环境变量（Environment Variables）是在程序运行时才提供的配置值，不存储在代码中，可以保护敏感信息不被泄露到代码仓库。">环境变量</span>传入。Film Lab 需要这些环境变量：
+      </p>
+
+      <div class="badge-list animate-in">
+        <div class="badge-item">
+          <code class="badge-code">SUPABASE_URL</code>
+          <span class="badge-desc">Supabase 项目地址，如 https://xxx.supabase.co</span>
+        </div>
+        <div class="badge-item">
+          <code class="badge-code">SUPABASE_SERVICE_ROLE_KEY</code>
+          <span class="badge-desc">服务端密钥，有完整数据库访问权限（不要泄露！）</span>
+        </div>
+        <div class="badge-item">
+          <code class="badge-code">ADMIN_USERNAME</code>
+          <span class="badge-desc">管理员用户名（可选，默认 zzh）</span>
+        </div>
+        <div class="badge-item">
+          <code class="badge-code">ADMIN_PASSWORD</code>
+          <span class="badge-desc">管理员密码（可选，默认 060312）</span>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">🛡️</div>
+        <div class="callout-content">
+          <strong class="callout-title">Service Role Key 的危险性</strong>
+          <p>Supabase 的 Service Role Key 拥有<b>绕过所有 Row Level Security</b> 的权限。这意味着任何人拿到这个密钥就能读写你的整个数据库。永远只把它放在服务器端，永远不要暴露在浏览器代码中！</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 6: 课程总结 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">课程总结</h2>
+      <p class="animate-in">
+        通过这门课程，你已经了解了 Film Lab 从用户界面到 GPU 图像处理、从胶片模拟算法到后端数据管理的完整技术栈。
+      </p>
+
+      <div class="step-cards animate-in">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>React + Next.js 架构</strong>
+            <p>组件化设计、状态管理、Hooks 的使用模式</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>WebGL 图像处理</strong>
+            <p>GPU 并行计算、GLSL 着色器、多通道渲染管线</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>胶片模拟技术</strong>
+            <p>色彩矩阵、曲线映射、光晕效果、颗粒生成</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>后端与数据</strong>
+            <p>Next.js API Routes、Supabase 集成、简单认证</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">🚀</div>
+        <div class="callout-content">
+          <strong class="callout-title">下一步建议</strong>
+          <p>如果你对某个模块特别感兴趣，可以深入阅读代码：
+          <br>• 想改胶片效果？看 <code>app/lib/webgl/styles.ts</code>
+          <br>• 想学 GLSL？看 <code>app/lib/webgl/shaders.ts</code>
+          <br>• 想加新功能？从 <code>app/page.tsx</code> 开始</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 7: 最终测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">最终测验</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module5">
+        <div class="quiz-question-block"
+             data-correct="webgl"
+             data-explanation-right="正确！WebGL 利用 GPU 的并行计算能力，可以同时处理成千上万个像素。这是 Film Lab 能够实现实时胶片模拟的核心技术。"
+             data-explanation-wrong="不对。虽然其他技术也很重要，但实时高性能图像处理的关键是 WebGL/GPU 加速。纯 Canvas 2D 或 CSS 滤镜都无法达到同样的性能和效果。">
+          <h3 class="quiz-question">Film Lab 能够实现"实时"胶片效果的核心技术是什么？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="canvas" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>HTML5 Canvas 2D API</span>
+            </button>
+            <button class="quiz-option" data-value="css" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>CSS filter 属性</span>
+            </button>
+            <button class="quiz-option" data-value="webgl" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>WebGL + GLSL 着色器</span>
+            </button>
+            <button class="quiz-option" data-value="worker" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Web Worker 多线程</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="curve"
+             data-explanation-right="正确！曲线映射可以对不同亮度区域做不同的处理，这是胶片特有的"暗部实、亮部柔"效果的关键。矩阵变换是线性的，对所有像素一视同仁。"
+             data-explanation-wrong="不对。虽然其他技术也参与胶片模拟，但曲线映射才是控制不同亮度区域响应的核心工具。">
+          <h3 class="quiz-question">在胶片模拟中，什么技术用于实现"亮部柔和、暗部扎实"的效果？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="matrix" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>色彩矩阵变换</span>
+            </button>
+            <button class="quiz-option" data-value="blur" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>高斯模糊</span>
+            </button>
+            <button class="quiz-option" data-value="noise" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>噪声生成</span>
+            </button>
+            <button class="quiz-option" data-value="curve" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>曲线映射</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="cookie"
+             data-explanation-right="正确！Film Lab 使用 HTTP-only Cookie 存储 visitor_id，这样可以识别回访用户，避免重复计数，同时保护用户隐私（不记录个人身份信息）。"
+             data-explanation-wrong="不对。虽然 IP 地址也用于查询地理位置，但识别同一用户的关键是 Cookie 中的 UUID。LocalStorage 不会被使用，SessionStorage 会在关闭页面后消失。">
+          <h3 class="quiz-question">Film Lab 如何识别"同一个用户"多次访问？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="ip" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>只使用 IP 地址</span>
+            </button>
+            <button class="quiz-option" data-value="cookie" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用 Cookie 存储 visitor_id</span>
+            </button>
+            <button class="quiz-option" data-value="local" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用 localStorage 存储 ID</span>
+            </button>
+            <button class="quiz-option" data-value="fingerprint" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用浏览器指纹技术</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module5')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module5')">重新作答</button>
+      </div>
+
+      <div class="callout callout-accent animate-in" style="margin-top: 32px;">
+        <div class="callout-icon">🎉</div>
+        <div class="callout-content">
+          <strong class="callout-title">恭喜完成课程！</strong>
+          <p>你已经掌握了 Film Lab 的核心技术原理。现在你可以更好地使用它，甚至尝试修改和扩展它。继续探索代码，实践是最好的老师！</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

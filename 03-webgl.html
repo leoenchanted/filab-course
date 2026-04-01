@@ -1,0 +1,281 @@
+<!-- 模块 3: WebGL 图像处理 -->
+<section class="module" id="module-3">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">03</span>
+      <h1 class="module-title">WebGL 图像处理</h1>
+      <p class="module-subtitle">用 GPU 加速实现专业级胶片效果</p>
+    </header>
+
+    <!-- 屏幕 1: WebGL 简介 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">为什么用 WebGL？</h2>
+      <p class="animate-in">
+        图像处理需要大量的像素运算。一张 4K 图片有 800 多万个像素，每个像素都要进行颜色矩阵乘法、曲线映射、模糊计算...如果用 JavaScript 在 CPU 上逐像素处理，可能要等好几秒。
+      </p>
+      <p class="animate-in">
+        <span class="term" data-definition="WebGL（Web Graphics Library）是一种 JavaScript API，用于在浏览器中渲染交互式 2D 和 3D 图形，无需插件，直接使用 GPU 加速。">WebGL</span> 让浏览器可以直接调用 <span class="term" data-definition="GPU（Graphics Processing Unit，图形处理器）是专门设计用于并行处理图形计算的芯片，拥有成百上千个小核心，可以同时处理大量数据。">GPU</span> 进行并行计算——800 万个像素同时处理，瞬间完成。
+      </p>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">⚡</div>
+        <div class="callout-content">
+          <strong class="callout-title">性能对比</strong>
+          <p>CPU 处理：串行执行，一个像素一个像素计算，4K 图片可能需要 2-3 秒。<br>GPU 处理：并行执行，同时计算成千上万个像素，同样的 4K 图片只需要 16-33 毫秒（一帧的时间）。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: WebGL 处理流程 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">图像处理管线</h2>
+      <p class="animate-in">
+        Film Lab 的 WebGLProcessor 类封装了一整套图像处理管线。原始图片进入管线，经过多个阶段的处理，最终输出带胶片效果的图像。
+      </p>
+
+      <div class="flow-steps animate-in">
+        <div class="flow-step">
+          <div class="flow-step-num">1</div>
+          <p>加载原图<br>到 WebGL 纹理</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">2</div>
+          <p>基础处理<br>色彩矩阵/曲线</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">3</div>
+          <p>光效叠加<br>光晕/柔光</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">4</div>
+          <p>颗粒合成<br>胶片质感</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num">5</div>
+          <p>最终调整<br>曝光/对比度</p>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">🎨</div>
+        <div class="callout-content">
+          <strong class="callout-title">纹理（Texture）</strong>
+          <p>在 WebGL 中，图片被上传到 GPU 后称为"纹理"（Texture）。就像给 3D 模型贴图一样，我们可以对这些纹理进行各种采样和计算操作。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: GLSL 着色器 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">GLSL 着色器</h2>
+      <p class="animate-in">
+        <span class="term" data-definition="GLSL（OpenGL Shading Language）是一种类似 C 语言的编程语言，专门用于编写在 GPU 上运行的着色器程序，控制图形渲染的每个像素如何计算。">GLSL</span> 是在 GPU 上运行的程序语言。Film Lab 编写了多个"着色器"来处理不同的图像效果。每个着色器接收输入纹理，输出处理后的像素颜色。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-keyword">uniform</span> <span class="code-keyword">sampler2D</span> u_image;</span>
+<span class="code-line"><span class="code-keyword">in</span> <span class="code-keyword">vec2</span> v_texCoord;</span>
+<span class="code-line"><span class="code-keyword">out</span> <span class="code-keyword">vec4</span> outColor;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">void</span> <span class="code-function">main</span>() {</span>
+<span class="code-line">  <span class="code-keyword">vec3</span> color = <span class="code-function">texture</span>(u_image, v_texCoord).rgb;</span>
+<span class="code-line">  </span>
+<span class="code-line">  <span class="code-comment">// 应用白平衡</span></span>
+<span class="code-line">  color *= u_wb;</span>
+<span class="code-line">  </span>
+<span class="code-line">  <span class="code-comment">// 应用色彩矩阵</span></span>
+<span class="code-line">  color = <span class="code-function">clamp</span>(u_matrix * color, 0.0, 1.0);</span>
+<span class="code-line">  </span>
+<span class="code-line">  outColor = <span class="code-function">vec4</span>(color, 1.0);</span>
+<span class="code-line">}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">声明输入纹理（要处理的图片）</p>
+            <p class="tl">纹理坐标（当前处理哪个位置的像素）</p>
+            <p class="tl">输出颜色（处理后的像素值）</p>
+            <p class="tl">空行</p>
+            <p class="tl">主函数开始</p>
+            <p class="tl">从纹理中采样当前像素的颜色</p>
+            <p class="tl">空行</p>
+            <p class="tl">注释：应用白平衡调整</p>
+            <p class="tl">乘以白平衡系数（RGB 分别调整）</p>
+            <p class="tl">空行</p>
+            <p class="tl">注释：应用 3x3 色彩变换矩阵</p>
+            <p class="tl">矩阵乘法并限制在 0-1 范围内</p>
+            <p class="tl">空行</p>
+            <p class="tl">输出最终颜色（RGB + Alpha）</p>
+            <p class="tl">函数结束</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-warning animate-in">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-content">
+          <strong class="callout-title">着色器在 GPU 上并行运行</strong>
+          <p>上面的代码会同时在 GPU 的成百上千个核心上运行，每个核心处理一个像素。这就是为什么不能有"if-else"分支处理不同位置的像素——所有像素必须走相同的代码路径，只是输入数据不同。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: 渲染流程代码 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">渲染函数解析</h2>
+      <p class="animate-in">
+        当用户调整滑块时，render 函数会被调用。它把所有调整参数传递给 GPU，然后执行最终的合成着色器。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-function">render</span>(width, height, params, isCompare) {</span>
+<span class="code-line">  <span class="code-keyword">this</span>.canvas.width = width;</span>
+<span class="code-line">  <span class="code-keyword">this</span>.canvas.height = height;</span>
+<span class="code-line">  </span>
+<span class="code-line">  <span class="code-keyword">this</span>.<span class="code-function">drawTo</span>(<span class="code-keyword">null</span>, <span class="code-keyword">this</span>.adjustProgram, () => {</span>
+<span class="code-line">    gl.<span class="code-function">uniform1f</span>(uniforms.u_opacity, params.opacity / 100);</span>
+<span class="code-line">    gl.<span class="code-function">uniform1f</span>(uniforms.u_exposure, params.exposure / 50);</span>
+<span class="code-line">    gl.<span class="code-function">uniform1f</span>(uniforms.u_contrast, params.contrast / 50);</span>
+<span class="code-line">    <span class="code-comment">// ... 更多参数</span></span>
+<span class="code-line">    gl.<span class="code-function">uniform1i</span>(uniforms.u_is_compare, isCompare ? 1 : 0);</span>
+<span class="code-line">  }, {</span>
+<span class="code-line">    u_image0: <span class="code-keyword">this</span>.texOriginal,</span>
+<span class="code-line">    u_image1: filmTarget.tex</span>
+<span class="code-line">  });</span>
+<span class="code-line">}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">定义 render 函数，接收尺寸、参数和是否对比模式</p>
+            <p class="tl">设置画布宽度</p>
+            <p class="tl">设置画布高度</p>
+            <p class="tl">空行</p>
+            <p class="tl">调用 drawTo 执行渲染（null 表示输出到屏幕）</p>
+            <p class="tl">设置透明度参数（0-1 范围）</p>
+            <p class="tl">设置曝光参数（-1 到 1 范围）</p>
+            <p class="tl">设置对比度参数</p>
+            <p class="tl">省略其他参数设置...</p>
+            <p class="tl">设置是否显示对比模式</p>
+            <p class="tl">开始传入纹理绑定</p>
+            <p class="tl">原图纹理</p>
+            <p class="tl">胶片效果纹理</p>
+            <p class="tl">结束 drawTo 调用</p>
+            <p class="tl">函数结束</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 5: 多通道渲染 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">多通道渲染</h2>
+      <p class="animate-in">
+        复杂的胶片效果不能一次完成，需要分多个"通道"（Pass）渲染。每个通道输出到临时纹理，下一个通道读取上一个通道的结果，层层叠加。
+      </p>
+
+      <div class="layer-demo animate-in">
+        <div class="layer-tabs">
+          <button class="layer-tab active" onclick="showLayer('layer-base', this)">基础处理</button>
+          <button class="layer-tab" onclick="showLayer('layer-bloom', this)">+ 光晕</button>
+          <button class="layer-tab" onclick="showLayer('layer-grain', this)">+ 颗粒</button>
+          <button class="layer-tab" onclick="showLayer('layer-final', this)">+ 最终</button>
+        </div>
+        <div class="layer-viewport">
+          <div class="layer" id="layer-base" style="display:block; padding: 20px; background: #1a1a2e; color: #cdd6f4;">
+            <strong>第一步：基础处理</strong><br><br>
+            白平衡调整 → 色彩矩阵变换 → 曲线映射 → 黑白转换（可选）<br><br>
+            输入：原始图片<br>
+            输出：基础色调调整后的图片
+          </div>
+          <div class="layer" id="layer-bloom" style="display:none; padding: 20px; background: #1a1a2e; color: #cdd6f4;">
+            <strong>第二步：光晕效果（Bloom）</strong><br><br>
+            提取高光区域 → 高斯模糊 → 叠加到原图<br><br>
+            效果：让亮部产生柔和的"发光"感，模拟胶片的高光特性
+          </div>
+          <div class="layer" id="layer-grain" style="display:none; padding: 20px; background: #1a1a2e; color: #cdd6f4;">
+            <strong>第三步：颗粒效果</strong><br><br>
+            生成随机噪声纹理 → 高通滤波 → 按亮度混合<br><br>
+            效果：添加胶片特有的颗粒质感，让数字照片更像胶片
+          </div>
+          <div class="layer" id="layer-final" style="display:none; padding: 20px; background: #1a1a2e; color: #cdd6f4;">
+            <strong>第四步：最终合成</strong><br><br>
+            叠加光晕图层 → 叠加颗粒图层 → 应用用户调整参数<br><br>
+            输出：最终显示在屏幕上的图像
+          </div>
+        </div>
+        <p class="layer-description" id="layer-desc-module3">点击上方标签查看每一层的作用</p>
+      </div>
+    </div>
+
+    <!-- 屏幕 6: 小测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">小测验</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module3">
+        <div class="quiz-question-block"
+             data-correct="texture"
+             data-explanation-right="正确！WebGL 使用纹理（Texture）来存储和传递图像数据。帧缓冲区（FBO）是用来接收渲染结果的目标，着色器（Shader）是处理程序，uniform 是传递参数的变量类型。"
+             data-explanation-wrong="不对。虽然帧缓冲区也很重要，但题目问的是"传递给着色器"的数据类型。纹理是专门用来在着色器中采样图像数据的类型。">
+          <h3 class="quiz-question">在 WebGL 中，图片上传到 GPU 后被称为什么？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="buffer" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Buffer（缓冲区）</span>
+            </button>
+            <button class="quiz-option" data-value="texture" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Texture（纹理）</span>
+            </button>
+            <button class="quiz-option" data-value="shader" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Shader（着色器）</span>
+            </button>
+            <button class="quiz-option" data-value="uniform" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>Uniform（统一变量）</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="parallel"
+             data-explanation-right="正确！GPU 的架构优势在于并行处理。成百上千个核心同时工作，每个处理一个像素。这是 GPU 处理图像比 CPU 快得多的根本原因。"
+             data-explanation-wrong="不对。虽然现代 CPU 也有多核，但 GPU 的核心数量远超 CPU，设计上就是为大规模并行计算而生。图像处理这种"每个像素做同样的事"的场景，正是 GPU 最擅长的。">
+          <h3 class="quiz-question">为什么 GPU 处理图像比 CPU 快得多？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="clock" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>GPU 的时钟频率更高</span>
+            </button>
+            <button class="quiz-option" data-value="memory" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>GPU 的内存更大</span>
+            </button>
+            <button class="quiz-option" data-value="parallel" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>GPU 可以同时处理成千上万个像素</span>
+            </button>
+            <button class="quiz-option" data-value="cache" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>GPU 的缓存更大</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module3')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module3')">重新作答</button>
+      </div>
+    </div>
+  </div>
+</section>

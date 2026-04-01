@@ -1,0 +1,365 @@
+<!-- 模块 4: 胶片预设系统 -->
+<section class="module" id="module-4">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">04</span>
+      <h1 class="module-title">胶片预设系统</h1>
+      <p class="module-subtitle">如何用代码"模拟"真实胶片的色彩科学</p>
+    </header>
+
+    <!-- 屏幕 1: 胶片模拟原理 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">胶片为什么看起来不一样？</h2>
+      <p class="animate-in">
+        每种胶片都有独特的"性格"。Kodak Portra 擅长肤色，Fuji 偏绿，CineStill 有标志性的红色光晕。这些差异来自胶片的化学配方和显影工艺。
+      </p>
+      <p class="animate-in">
+        数字模拟的核心是：<strong>用数学公式复制这些化学特性</strong>。Film Lab 使用了四种主要技术：色彩矩阵、曲线映射、光晕效果和颗粒生成。
+      </p>
+
+      <div class="pattern-cards animate-in">
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+          <div class="pattern-icon" style="background: var(--color-actor-1)">🔢</div>
+          <h4 class="pattern-title">色彩矩阵</h4>
+          <p class="pattern-desc">3x3 矩阵重新映射 RGB 通道，改变整体色彩倾向</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+          <div class="pattern-icon" style="background: var(--color-actor-2)">📈</div>
+          <h4 class="pattern-title">曲线映射</h4>
+          <p class="pattern-desc">非线性函数调整亮部和暗部的响应，控制对比度</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+          <div class="pattern-icon" style="background: var(--color-actor-3)">✨</div>
+          <h4 class="pattern-title">光晕效果</h4>
+          <p class="pattern-desc">高斯模糊模拟胶片高光"渗开"的物理特性</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-4)">
+          <div class="pattern-icon" style="background: var(--color-actor-4)">🌾</div>
+          <h4 class="pattern-title">颗粒生成</h4>
+          <p class="pattern-desc">随机噪声模拟胶片银盐颗粒的质感</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: 色彩矩阵 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">色彩矩阵变换</h2>
+      <p class="animate-in">
+        <span class="term" data-definition="色彩矩阵（Color Matrix）是一个 3x3 的矩阵，用于对 RGB 三个颜色通道进行线性组合，可以改变图像的整体色彩倾向。">色彩矩阵</span> 是最基础的色彩调整方式。通过 3x3 矩阵，我们可以重新混合红、绿、蓝三个通道的比例。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-comment">// Kodak Portra 400 的色彩矩阵</span></span>
+<span class="code-line">matrix: [</span>
+<span class="code-line">  <span class="code-number">0.92</span>, <span class="code-number">0.05</span>, <span class="code-number">0.03</span>,  <span class="code-comment">// 新 R = 0.92*R + 0.05*G + 0.03*B</span></span>
+<span class="code-line">  <span class="code-number">0.00</span>, <span class="code-number">0.98</span>, <span class="code-number">0.02</span>,  <span class="code-comment">// 新 G = 0.00*R + 0.98*G + 0.02*B</span></span>
+<span class="code-line">  <span class="code-number">0.04</span>, <span class="code-number">0.08</span>, <span class="code-number">0.88</span>   <span class="code-comment">// 新 B = 0.04*R + 0.08*G + 0.88*B</span></span>
+<span class="code-line">]</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：这是柯达 Portra 400 胶片的色彩矩阵配置</p>
+            <p class="tl">矩阵开始</p>
+            <p class="tl">第一行：新的红色通道 = 92%原红 + 5%原绿 + 3%原蓝</p>
+            <p class="tl">第二行：新的绿色通道 = 0%原红 + 98%原绿 + 2%原蓝</p>
+            <p class="tl">第三行：新的蓝色通道 = 4%原红 + 8%原绿 + 88%原蓝</p>
+            <p class="tl">矩阵结束</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content">
+          <strong class="callout-title">Portra 的"肤色保护"</strong>
+          <p>观察上面的矩阵：绿色通道几乎保持不变（98%），红色通道略微降低（92%），蓝色通道明显降低（88%）。这种组合让肤色更暖、更自然，是 Portra 胶片备受人像摄影师喜爱的原因。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: 曲线映射 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">曲线映射</h2>
+      <p class="animate-in">
+        <span class="term" data-definition="曲线映射（Curve Mapping）是一种通过控制点定义的非线性变换函数，可以精确控制不同亮度区域的输出，是调色中最强大的工具之一。">曲线映射</span> 让胶片可以对不同亮度区域做不同的处理。比如让暗部更实、亮部更柔，这就是胶片特有的"宽容度"。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-comment">// Fuji Pro 400H 的曲线</span></span>
+<span class="code-line">curve: [</span>
+<span class="code-line">  [<span class="code-number">0</span>,   <span class="code-number">0</span>],   <span class="code-comment">// 输入 0 → 输出 0（纯黑保持）</span></span>
+<span class="code-line">  [<span class="code-number">40</span>, <span class="code-number">38</span>],   <span class="code-comment">// 输入 40 → 输出 38（暗部微压）</span></span>
+<span class="code-line">  [<span class="code-number">128</span>, <span class="code-number">135</span>], <span class="code-comment">// 输入 128 → 输出 135（中间调提亮）</span></span>
+<span class="code-line">  [<span class="code-number">220</span>, <span class="code-number">232</span>], <span class="code-comment">// 输入 220 → 输出 232（亮部提升）</span></span>
+<span class="code-line">  [<span class="code-number">255</span>, <span class="code-number">252</span>]  <span class="code-comment">// 输入 255 → 输出 252（纯白微压）</span></span>
+<span class="code-line">]</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：Fuji Pro 400H 胶片的曲线配置</p>
+            <p class="tl">曲线控制点数组开始</p>
+            <p class="tl">第1点：输入0(纯黑) → 输出0，保持纯黑</p>
+            <p class="tl">第2点：输入40(暗部) → 输出38，略微压缩</p>
+            <p class="tl">第3点：输入128(中间调) → 输出135，提亮</p>
+            <p class="tl">第4点：输入220(亮部) → 输出232，明显提升</p>
+            <p class="tl">第5点：输入255(纯白) → 输出252，略微压缩</p>
+            <p class="tl">数组结束</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">🎨</div>
+        <div class="callout-content">
+          <strong class="callout-title">Fuji 的" airy look"</strong>
+          <p>Fuji 胶片的特点是亮部特别通透。看曲线：220 的输入被映射到 232 的输出，这意味着亮部被整体提亮，产生那种"空气感"。同时纯白微压（252）防止过曝死白。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: CineStill 光晕效果 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">CineStill 的红色光晕</h2>
+      <p class="animate-in">
+        CineStill 800T 是最有辨识度的胶片之一。它是电影胶片（Tungsten 灯光片）去掉 <span class="term" data-definition="Remjet 层是电影胶片背面的一层黑色碳层，用于防止曝光时的光反射和静电。去掉它后，光线会在胶片层间反射，产生独特的红色光晕。">Remjet 层</span> 后的产物，高亮区域会产生标志性的红色光晕。
+      </p>
+
+      <div class="group-chat animate-in" id="chat-cinestill">
+        <div class="chat-messages">
+          <div class="chat-message" data-sender="user" style="display:none">
+            <div class="chat-avatar" style="background: var(--color-actor-1)">U</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-1)">用户</span>
+              <p>为什么 CineStill 照片的红色灯光会有那种弥散的效果？</p>
+            </div>
+          </div>
+          <div class="chat-message" data-sender="film" style="display:none">
+            <div class="chat-avatar" style="background: var(--color-actor-2)">F</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-2)">胶片结构</span>
+              <p>普通电影胶片有一层叫 Remjet 的黑色背层，但 CineStill 把它去掉了...</p>
+            </div>
+          </div>
+          <div class="chat-message" data-sender="light" style="display:none">
+            <div class="chat-avatar" style="background: var(--color-actor-3)">L</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-3)">高光</span>
+              <p>当强光进入胶片时，会在片基层里散射，再从边缘反射回来，就形成了光晕！</p>
+            </div>
+          </div>
+          <div class="chat-message" data-sender="code" style="display:none">
+            <div class="chat-avatar" style="background: var(--color-actor-4)">C</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-4)">代码模拟</span>
+              <p>我用高斯模糊提取高光，然后加上橙红色调，再叠加回去，就模拟出这种效果了~</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-typing" style="display:none">
+          <div class="chat-avatar">?</div>
+          <div class="chat-typing-dots">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        </div>
+
+        <div class="chat-controls">
+          <button class="btn chat-next-btn">下一条</button>
+          <button class="btn chat-all-btn">全部播放</button>
+          <button class="btn chat-reset-btn">重新开始</button>
+          <span class="chat-progress"></span>
+        </div>
+      </div>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-comment">// CineStill 光晕效果配置</span>
+halation: {
+  threshold: <span class="code-number">0.85</span>,      <span class="code-comment">// 只处理亮度>85%的区域</span>
+  strength: <span class="code-number">0.6</span>,       <span class="code-comment">// 光晕强度</span>
+  colorShift: [<span class="code-number">1.8</span>, <span class="code-number">0.4</span>, <span class="code-number">0.1</span>], <span class="code-comment">// 橙红色调</span>
+  sigmaSmall: <span class="code-number">8</span>,       <span class="code-comment">// 小范围模糊</span>
+  sigmaLarge: <span class="code-number">20</span>       <span class="code-comment">// 大范围模糊</span>
+}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：CineStill 光晕效果配置</p>
+            <p class="tl">亮度阈值：只有超过85%亮度的高光才会产生光晕</p>
+            <p class="tl">强度：光晕效果的强弱程度（0.6=60%）</p>
+            <p class="tl">颜色偏移：RGB分别为1.8(红)、0.4(绿)、0.1(蓝)=橙色</p>
+            <p class="tl">小模糊半径：产生清晰的核心光晕</p>
+            <p class="tl">大模糊半径：产生弥散的边缘光晕</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 5: 颗粒生成 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">胶片颗粒的秘密</h2>
+      <p class="animate-in">
+        胶片颗粒不是简单的"噪声"，而是有结构的。亮部颗粒细、暗部颗粒粗，彩色胶片还有色度颗粒和亮度颗粒的区别。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-comment">// 频谱颗粒生成（Spectral Grain）</span>
+<span class="code-function">buildSpectralGrain</span>(width, height, intensity) {
+  <span class="code-comment">// 1. 生成随机噪声纹理</span>
+  <span class="code-keyword">const</span> noiseTex = <span class="code-keyword">this</span>.<span class="code-function">ensureNoiseTexture</span>(...);
+
+  <span class="code-comment">// 2. 高通滤波提取细颗粒</span>
+  <span class="code-keyword">const</span> fineTex = <span class="code-keyword">this</span>.<span class="code-function">buildHighpassLuma</span>(noiseTex, ...);
+
+  <span class="code-comment">// 3. 可选：模糊产生粗颗粒</span>
+  <span class="code-keyword">if</span> (softness > <span class="code-number">0.001</span>) {
+    <span class="code-keyword">const</span> blurred = <span class="code-keyword">this</span>.<span class="code-function">blurTexture</span>(noiseTex, softness);
+  }
+
+  <span class="code-comment">// 4. 按亮度混合（亮部颗粒少，暗部颗粒多）</span>
+  <span class="code-keyword">return</span> { mainTex, fineTex };
+}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">注释：频谱颗粒生成技术</p>
+            <p class="tl">方法定义开始</p>
+            <p class="tl">步骤1：生成基础随机噪声</p>
+            <p class="tl">步骤2：高通滤波提取高频细节（细颗粒）</p>
+            <p class="tl">步骤3：如果需要软颗粒效果，进行模糊处理</p>
+            <p class="tl">步骤4：根据图像亮度混合颗粒（亮部少暗部多）</p>
+            <p class="tl">返回粗细两种颗粒纹理</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">🔬</div>
+        <div class="callout-content">
+          <strong class="callout-title">为什么叫"频谱"颗粒？</strong>
+          <p>真实胶片颗粒有不同的"尺寸"。高通滤波提取的是高频（细颗粒），模糊后的是低频（粗颗粒）。把不同频率的颗粒叠加，就能得到自然的颗粒结构——就像音频里的低音+高音组成完整音乐一样。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 6: 胶片预设数据结构 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">胶片预设数据结构</h2>
+      <p class="animate-in">
+        每种胶片都是一个 JavaScript 对象，包含基础处理、光晕效果和颗粒参数三部分。Film Lab 支持 10+ 种胶片预设。
+      </p>
+
+      <div class="file-tree animate-in">
+        <div class="ft-folder open">
+          <span class="ft-name">FILM_STYLE</span>
+          <span class="ft-desc">胶片预设对象集合</span>
+          <div class="ft-children">
+            <div class="ft-file">
+              <span class="ft-name">kodak</span>
+              <span class="ft-desc">Portra 400 - 人像首选，肤色保护</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">fuji</span>
+              <span class="ft-desc">Pro 400H - 日系清新，亮部通透</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">cinestill</span>
+              <span class="ft-desc">800T - 电影感，红色光晕</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">ilford</span>
+              <span class="ft-desc">HP5 - 经典黑白，高对比</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">polaroid</span>
+              <span class="ft-desc">宝丽来 - 复古，柔光</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">...</span>
+              <span class="ft-desc">还有更多：Gold 200、Ricoh GR 等</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 7: 小测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">小测验</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module4">
+        <div class="dnd-container">
+          <p style="margin-bottom: 16px; color: var(--color-text-secondary);">拖拽胶片特点到对应的描述：</p>
+          <div class="dnd-chips">
+            <div class="dnd-chip" draggable="true" data-answer="portra">肤色保护</div>
+            <div class="dnd-chip" draggable="true" data-answer="fuji">亮部通透</div>
+            <div class="dnd-chip" draggable="true" data-answer="cinestill">红色光晕</div>
+            <div class="dnd-chip" draggable="true" data-answer="ilford">黑白高对比</div>
+          </div>
+          <div class="dnd-zones">
+            <div class="dnd-zone" data-correct="portra">
+              <p class="dnd-zone-label">Kodak Portra 400 特点</p>
+              <div class="dnd-zone-target">拖到这里</div>
+            </div>
+            <div class="dnd-zone" data-correct="fuji">
+              <p class="dnd-zone-label">Fuji Pro 400H 特点</p>
+              <div class="dnd-zone-target">拖到这里</div>
+            </div>
+            <div class="dnd-zone" data-correct="cinestill">
+              <p class="dnd-zone-label">CineStill 800T 特点</p>
+              <div class="dnd-zone-target">拖到这里</div>
+            </div>
+            <div class="dnd-zone" data-correct="ilford">
+              <p class="dnd-zone-label">Ilford HP5 特点</p>
+              <div class="dnd-zone-target">拖到这里</div>
+            </div>
+          </div>
+          <button onclick="checkDnD('quiz-module4')" style="margin-top: 16px;">检查答案</button>
+          <button onclick="resetDnD('quiz-module4')" style="margin-left: 8px;">重置</button>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="curve"
+             data-explanation-right="正确！曲线映射可以对不同亮度区域做不同的处理，比如提亮中间调同时保持暗部，这是矩阵变换做不到的。矩阵变换是对所有像素做同样的线性组合。"
+             data-explanation-wrong="不对。矩阵变换是线性的，对所有像素一视同仁。要实现胶片特有的"暗部实、亮部柔"的效果，必须用曲线映射这种非线性工具。">
+          <h3 class="quiz-question">如果想让"中间调亮一些，但暗部和亮部基本不变"，应该用什么工具？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="matrix" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>色彩矩阵</span>
+            </button>
+            <button class="quiz-option" data-value="curve" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>曲线映射</span>
+            </button>
+            <button class="quiz-option" data-value="blur" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>高斯模糊</span>
+            </button>
+            <button class="quiz-option" data-value="noise" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>噪声生成</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module4')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module4')">重新作答</button>
+      </div>
+    </div>
+  </div>
+</section>

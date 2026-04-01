@@ -1,0 +1,166 @@
+<!-- 模块 1: 初识 Film Lab -->
+<section class="module" id="module-1">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">01</span>
+      <h1 class="module-title">初识 Film Lab</h1>
+      <p class="module-subtitle">一个基于 WebGL 的专业胶片模拟滤镜编辑器</p>
+    </header>
+
+    <!-- 屏幕 1: 这是什么 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">Film Lab 是什么？</h2>
+      <p class="animate-in">
+        <span class="term" data-definition="胶片模拟（Film Simulation）是一种数字图像处理技术，通过算法模仿传统胶片相机拍摄的色彩和质感。">胶片模拟</span>曾经是专业摄影师的专属工具，需要昂贵的 Lightroom 插件或 Photoshop 动作。Film Lab 把它带到了浏览器里——免费、即时、专业级。
+      </p>
+
+      <div class="pattern-cards animate-in">
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+          <div class="pattern-icon" style="background: var(--color-actor-1)">🎞️</div>
+          <h4 class="pattern-title">经典胶片预设</h4>
+          <p class="pattern-desc">Fuji Pro 400H、Kodak Portra 400、CineStill 800T 等 10+ 种专业胶片模拟</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+          <div class="pattern-icon" style="background: var(--color-actor-2)">⚡</div>
+          <h4 class="pattern-title">实时 GPU 加速</h4>
+          <p class="pattern-desc">使用 WebGL 2.0 在显卡上直接处理图像，秒级渲染大分辨率照片</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+          <div class="pattern-icon" style="background: var(--color-actor-3)">🎚️</div>
+          <h4 class="pattern-title">精细参数调整</h4>
+          <p class="pattern-desc">曝光、对比度、色温、色调、颗粒、暗角——完全可控</p>
+        </div>
+        <div class="pattern-card" style="border-top: 3px solid var(--color-actor-4)">
+          <div class="pattern-icon" style="background: var(--color-actor-4)">💾</div>
+          <h4 class="pattern-title">高质量导出</h4>
+          <p class="pattern-desc">支持原分辨率导出，保留最高画质，自动处理超大图片</p>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content">
+          <strong class="callout-title">为什么浏览器能做这个？</strong>
+          <p>传统上，图像处理需要 Photoshop 或 Lightroom 这样的桌面软件。但随着 <span class="term" data-definition="WebGL 是一种在网页浏览器中使用 GPU 加速图形渲染的技术，无需插件即可实现高性能 3D 和 2D 图形。">WebGL</span> 技术的成熟，浏览器现在可以直接调用你的显卡进行并行计算——这意味着复杂的图像滤镜可以在几毫秒内完成。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: 使用场景 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">想象一下这个场景</h2>
+      <p class="animate-in">
+        你刚拍完一组照片，想给它们统一加上那种复古胶片的质感。以前你需要：打开 Lightroom → 导入照片 → 购买 VSCO 预设包 → 逐个调整参数 → 导出。
+      </p>
+      <p class="animate-in">
+        用 Film Lab，你只需要：打开网页 → 拖拽照片 → 点击喜欢的胶片风格 → 下载。
+      </p>
+
+      <div class="step-cards animate-in">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>上传照片</strong>
+            <p>支持任意分辨率的 JPG/PNG，自动处理超大图片</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>选择胶片风格</strong>
+            <p>从 Fuji、Kodak、B&W、Vintage 四个分类中选择</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>微调参数（可选）</strong>
+            <p>调整强度、色温、颗粒感等参数，打造独特风格</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>导出成品</strong>
+            <p>一键下载处理后的高清图片，文件名自动包含胶片型号</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: 技术亮点预览 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">技术亮点预览</h2>
+      <p class="animate-in">
+        这个看似简单的应用背后，隐藏着许多精心设计的工程技术。在接下来的模块中，我们将深入探讨：
+      </p>
+
+      <div class="icon-rows animate-in">
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-1)">⚛️</div>
+          <div>
+            <strong>React + Next.js 架构</strong>
+            <p>现代化的前端组件系统，如何处理复杂的 UI 状态管理</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-2)">🎨</div>
+          <div>
+            <strong>WebGL 图像处理管线</strong>
+            <p>从 GLSL 着色器到帧缓冲区，完整的 GPU 图像处理流程</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-3)">🎞️</div>
+          <div>
+            <strong>胶片模拟算法</strong>
+            <p>色彩矩阵、曲线映射、光晕效果、颗粒生成——如何"欺骗"眼睛</p>
+          </div>
+        </div>
+        <div class="icon-row">
+          <div class="icon-circle" style="background: var(--color-actor-4)">🗄️</div>
+          <div>
+            <strong>Supabase 后端集成</strong>
+            <p>访客统计、地理位置追踪、简单的身份验证系统</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: 小测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">快速检验一下</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module1">
+        <div class="quiz-question-block"
+             data-correct="gpu"
+             data-explanation-right="正确！Film Lab 使用 WebGL 技术直接调用 GPU 进行图像处理，这是它能实现实时滤镜的关键。"
+             data-explanation-wrong="不对。虽然服务器可以处理图像，但 Film Lab 的所有处理都在浏览器本地完成，利用的是用户的显卡（GPU）进行加速。">
+          <h3 class="quiz-question">Film Lab 的图像滤镜是在哪里计算的？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="server" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>发送到远程服务器处理</span>
+            </button>
+            <button class="quiz-option" data-value="cpu" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用电脑的 CPU 慢慢计算</span>
+            </button>
+            <button class="quiz-option" data-value="gpu" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用显卡的 GPU 实时渲染</span>
+            </button>
+            <button class="quiz-option" data-value="cloud" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>云端 AI 模型处理</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module1')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module1')">重新作答</button>
+      </div>
+    </div>
+  </div>
+</section>

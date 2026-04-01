@@ -1,0 +1,208 @@
+<!-- 模块 2: 核心组件架构 -->
+<section class="module" id="module-2">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">02</span>
+      <h1 class="module-title">核心组件架构</h1>
+      <p class="module-subtitle">React 组件如何协作构建这个应用</p>
+    </header>
+
+    <!-- 屏幕 1: 组件概览 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">认识三个核心组件</h2>
+      <p class="animate-in">
+        Film Lab 的界面由三个核心 React 组件协作完成：<code>page.tsx</code>（主页面）、<code>FilmItem.tsx</code>（胶片卡片）和 WebGL 处理器。它们各司其职，又紧密配合。
+      </p>
+
+      <div class="arch-diagram animate-in">
+        <div class="arch-zone">
+          <h4 class="arch-zone-label">组件层级</h4>
+          <div class="arch-component" data-desc="整个应用的入口，管理所有状态（当前胶片、调整参数、图片数据等），协调各个子组件的交互" onclick="showArchDesc(this)">
+            <div class="arch-icon">🏠</div>
+            <span>page.tsx</span>
+          </div>
+          <div class="arch-component" data-desc="负责渲染单个胶片预设的缩略图卡片，处理点击事件，显示激活状态" onclick="showArchDesc(this)">
+            <div class="arch-icon">🎴</div>
+            <span>FilmItem</span>
+          </div>
+          <div class="arch-component" data-desc="WebGL 图像处理的核心类，封装了所有的 GPU 操作和渲染逻辑" onclick="showArchDesc(this)">
+            <div class="arch-icon">🎨</div>
+            <span>WebGLProcessor</span>
+          </div>
+        </div>
+        <div class="arch-description" id="arch-desc-module2">点击上方组件了解其职责</div>
+      </div>
+    </div>
+
+    <!-- 屏幕 2: 数据流动画 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">数据如何流动</h2>
+      <p class="animate-in">
+        当你点击一个胶片预设时，数据是这样流转的：FilmItem 组件被点击 → page.tsx 更新状态 → WebGLProcessor 重新渲染图像 → 画布更新。
+      </p>
+
+      <div class="flow-animation animate-in" data-steps='[
+        {"highlight":"flow-actor-1","label":"用户点击 Kodak Portra 400 胶片卡片"},
+        {"highlight":"flow-actor-2","label":"FilmItem 调用 onClick 回调函数","packet":true,"from":"actor-1","to":"actor-2"},
+        {"highlight":"flow-actor-2","label":"page.tsx 更新 currentFilm 状态","packet":true,"from":"actor-2","to":"actor-3"},
+        {"highlight":"flow-actor-3","label":"WebGLProcessor 加载胶片风格参数","packet":true,"from":"actor-3","to":"actor-4"},
+        {"highlight":"flow-actor-4","label":"Canvas 画布重新渲染并显示新效果","packet":true,"from":"actor-4","to":"actor-5"}
+      ]'>
+        <div class="flow-actors">
+          <div class="flow-actor" id="flow-actor-1">
+            <div class="flow-actor-icon">👆</div>
+            <span>用户点击</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-2">
+            <div class="flow-actor-icon">🎴</div>
+            <span>FilmItem</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-3">
+            <div class="flow-actor-icon">⚛️</div>
+            <span>page.tsx</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-4">
+            <div class="flow-actor-icon">🎨</div>
+            <span>WebGL</span>
+          </div>
+          <div class="flow-actor" id="flow-actor-5">
+            <div class="flow-actor-icon">🖼️</div>
+            <span>Canvas</span>
+          </div>
+        </div>
+
+        <div class="flow-packet" id="flow-packet"></div>
+
+        <div class="flow-step-label" id="flow-label">点击 "下一步" 查看数据流动过程</div>
+
+        <div class="flow-controls">
+          <button class="btn flow-next-btn">下一步</button>
+          <button class="btn flow-reset-btn">重新开始</button>
+          <span class="flow-progress"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 3: 状态管理 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">状态管理的艺术</h2>
+      <p class="animate-in">
+        page.tsx 管理着应用的所有核心状态。让我们看看它用 <span class="term" data-definition="React Hook 是 React 16.8 引入的新特性，让函数组件也能使用状态（useState）和副作用（useEffect）等 React 特性，无需编写类组件。">React Hooks</span> 管理了哪些数据：
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-keyword">const</span> [currentFilm, setCurrentFilm] = <span class="code-function">useState</span>&lt;<span class="code-keyword">string</span> | <span class="code-keyword">null</span>&gt;(<span class="code-keyword">null</span>);</span>
+<span class="code-line"><span class="code-keyword">const</span> [params, setParams] = <span class="code-function">useState</span>&lt;AdjustParams&gt;({...});</span>
+<span class="code-line"><span class="code-keyword">const</span> [hasImage, setHasImage] = <span class="code-function">useState</span>(<span class="code-keyword">false</span>);</span>
+<span class="code-line"><span class="code-keyword">const</span> [mode, setMode] = <span class="code-function">useState</span>&lt;Mode&gt;(<span class="code-string">'presets'</span>);</span>
+<span class="code-line"><span class="code-keyword">const</span> canvasRef = <span class="code-function">useRef</span>&lt;HTMLCanvasElement&gt;(<span class="code-keyword">null</span>);</span>
+<span class="code-line"><span class="code-keyword">const</span> glRef = <span class="code-function">useRef</span>&lt;WebGLProcessor | <span class="code-keyword">null</span>&gt;(<span class="code-keyword">null</span>);</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">当前选中的胶片 ID（如 'kodak'），null 表示未选择</p>
+            <p class="tl">所有调整参数（曝光、对比度、色温等 12 个值）</p>
+            <p class="tl">布尔值：用户是否已上传图片</p>
+            <p class="tl">当前面板模式：'presets' 预设面板 或 'adjust' 调整面板</p>
+            <p class="tl">用 useRef 获取 Canvas DOM 元素的引用</p>
+            <p class="tl">用 useRef 持久保存 WebGL 处理器实例（不触发重渲染）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <div class="callout-icon">📝</div>
+        <div class="callout-content">
+          <strong class="callout-title">useState vs useRef</strong>
+          <p>useState 适合存储会改变并需要更新 UI 的数据（如当前选中的胶片）。useRef 适合存储不需要触发界面更新的数据（如 WebGL 实例），或者在多次渲染之间保持不变的引用。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 4: FilmItem 组件 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">FilmItem 组件详解</h2>
+      <p class="animate-in">
+        FilmItem 是一个纯展示组件，接收 film 数据、是否激活状态和点击回调，渲染一个胶片缩略图卡片。
+      </p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">CODE</span>
+          <pre><code><span class="code-line"><span class="code-keyword">export default function</span> <span class="code-function">FilmItem</span>({ film, isActive, onClick }: FilmItemProps) {</span>
+<span class="code-line">  <span class="code-keyword">return</span> (</span>
+<span class="code-line">    &lt;<span class="code-tag">div</span></span>
+<span class="code-line">      <span class="code-attr">className</span>={<span class="code-string">`film-item ${isActive ? 'active' : ''}`</span>}</span>
+<span class="code-line">      <span class="code-attr">onClick</span>={onClick}</span>
+<span class="code-line">    &gt;</span>
+<span class="code-line">      &lt;<span class="code-tag">Image</span> <span class="code-attr">src</span>={<span class="code-string">`/films/${film.img}`</span>} <span class="code-attr">alt</span>={film.name} /&gt;</span>
+<span class="code-line">      &lt;<span class="code-tag">span</span>&gt;{film.name}&lt;/<span class="code-tag">span</span>&gt;</span>
+<span class="code-line">    &lt;/<span class="code-tag">div</span>&gt;</span>
+<span class="code-line">  );</span>
+<span class="code-line">}</span></code></pre>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">PLAIN ENGLISH</span>
+          <div class="translation-lines">
+            <p class="tl">定义 FilmItem 组件，接收三个属性参数</p>
+            <p class="tl">返回 JSX 结构</p>
+            <p class="tl">外层 div，CSS 类名根据 isActive 动态变化</p>
+            <p class="tl">如果激活就加上 'active' 类，显示橙色边框</p>
+            <p class="tl">点击时调用父组件传入的 onClick 函数</p>
+            <p class="tl">使用 Next.js Image 组件加载胶片缩略图</p>
+            <p class="tl">显示胶片名称（如 "Portra 400"）</p>
+            <p class="tl">结束 div 标签</p>
+            <p class="tl">结束 return</p>
+            <p class="tl">结束函数定义</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 屏幕 5: 小测验 -->
+    <div class="screen">
+      <h2 class="screen-heading animate-in">小测验</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module2">
+        <div class="scenario-block">
+          <div class="scenario-context">
+            <span class="scenario-label">场景</span>
+            <p>你想给 Film Lab 添加一个新的功能：让用户可以保存自己调整好的参数为一个新的自定义预设。</p>
+          </div>
+        </div>
+
+        <div class="quiz-question-block"
+             data-correct="state"
+             data-explanation-right="正确！你需要添加一个新的 useState 来存储用户的自定义预设列表。这个状态需要在 page.tsx 中管理，因为它需要在多个地方被访问和更新。"
+             data-explanation-wrong="不对。虽然 localStorage 可以用来持久化存储，但应用运行时的新预设列表应该用 useState 管理。useRef 不会触发重渲染，useEffect 是用来处理副作用的，都不能直接存储列表数据。">
+          <h3 class="quiz-question">你会用什么来存储这个新的"自定义预设列表"？</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="state" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用 useState 创建一个新状态</span>
+            </button>
+            <button class="quiz-option" data-value="ref" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>用 useRef 存储列表引用</span>
+            </button>
+            <button class="quiz-option" data-value="effect" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>在 useEffect 中直接操作</span>
+            </button>
+            <button class="quiz-option" data-value="storage" onclick="selectOption(this)">
+              <div class="quiz-option-radio"></div>
+              <span>只用 localStorage，不用 React 状态</span>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module2')">检查答案</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module2')">重新作答</button>
+      </div>
+    </div>
+  </div>
+</section>
